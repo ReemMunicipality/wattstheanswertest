@@ -1,0 +1,641 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{tcolorbox}
+
+% Page geometry
+\geometry{margin=2.5cm}
+
+% Colors
+\definecolor{primaryorange}{HTML}{FF9800}
+\definecolor{secondaryblue}{HTML}{0482DC}
+\definecolor{darktext}{HTML}{333333}
+\definecolor{successgreen}{HTML}{8BC34A}
+\definecolor{errorred}{HTML}{F44336}
+\definecolor{codebg}{HTML}{F5F5F5}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=secondaryblue,
+    urlcolor=secondaryblue
+}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{darktext}{Watt's the Answer? -- Development Report}}
+\fancyhead[R]{\textcolor{darktext}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Section formatting
+\titleformat{\section}
+    {\Large\bfseries\color{primaryorange}}
+    {\thesection}{1em}{}
+\titleformat{\subsection}
+    {\large\bfseries\color{secondaryblue}}
+    {\thesubsection}{1em}{}
+
+% Custom boxes
+\newtcolorbox{issuebox}{
+    colback=errorred!10,
+    colframe=errorred,
+    title=Issue Identified,
+    fonttitle=\bfseries
+}
+
+\newtcolorbox{fixbox}{
+    colback=successgreen!10,
+    colframe=successgreen,
+    title=Solution Implemented,
+    fonttitle=\bfseries
+}
+
+% Code listing style
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{darktext!30}
+}
+
+% Document begins
+\begin{document}
+
+% Title page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge\bfseries\textcolor{primaryorange}{Watt's the Answer?}\\[0.5cm]}
+    {\Large\textcolor{secondaryblue}{Development \& Improvement Report}\\[2cm]}
+
+    \rule{\textwidth}{1pt}\\[1cm]
+
+    {\large
+    \textbf{Project Type:} Educational Trivia Game\\[0.3cm]
+    \textbf{Platform:} Web Application\\[0.3cm]
+    \textbf{Technologies:} HTML5, CSS3, JavaScript (ES6), Firebase\\[0.3cm]
+    }
+
+    \rule{\textwidth}{1pt}\\[2cm]
+
+    {\large\textbf{Original Development Team:}}\\[0.5cm]
+    Adam Ghafur\\
+    Anas Msimir\\
+    Hoor Khleifat\\
+    Syed Arhaan Ahmed\\[2cm]
+
+    {\large\textbf{Report Date:} \today}
+
+    \vfill
+\end{titlepage}
+
+% Table of contents
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Executive Summary}
+% ============================================================
+
+This report documents the comprehensive code review, bug fixes, and improvements made to the ``Watt's the Answer?'' educational trivia game. The game is designed to teach players about sustainability and renewable energy while competing for virtual currency (Reem Coins).
+
+During the review process, we identified and resolved several critical bugs, security vulnerabilities, and usability issues. We also implemented new features to enhance accessibility and user experience.
+
+\subsection{Key Achievements}
+\begin{itemize}
+    \item Fixed 4 critical bugs that could crash the game
+    \item Removed 3 duplicate questions from the question bank
+    \item Added comprehensive accessibility support (WCAG compliance)
+    \item Implemented keyboard navigation for all game functions
+    \item Added sound toggle functionality
+    \item Improved input validation and security
+    \item Added Excel/CSV question loading for easy content management
+    \item Redesigned game logic with 20-question format and bidirectional prize movement
+    \item Implemented 5-game question cooldown system for maximum replayability
+\end{itemize}
+
+% ============================================================
+\section{Critical Bug Fixes}
+% ============================================================
+
+\subsection{50/50 Lifeline Crash on True/False Questions}
+
+\begin{issuebox}
+The 50/50 lifeline (Elimination) was programmed to always remove exactly two wrong answers. However, True/False questions only have one wrong answer. When a player used this lifeline on a True/False question, the game would attempt to access an undefined array element, causing a JavaScript error and potentially freezing the game.
+\end{issuebox}
+
+\begin{fixbox}
+We modified the \texttt{useFiftyFifty()} function to dynamically detect the number of options available. For True/False questions (2 options), the lifeline now removes only 1 wrong answer. For standard 4-option questions, it continues to remove 2 wrong answers as intended.
+\end{fixbox}
+
+\subsection{Audience Insight Broken for 2-Option Questions}
+
+\begin{issuebox}
+The Audience Insight lifeline was hardcoded to display voting percentages for exactly four options (A, B, C, D). When used on True/False questions, this resulted in displaying incorrect data with undefined values for options C and D, confusing players.
+\end{issuebox}
+
+\begin{fixbox}
+We rewrote the \texttt{useAskAudience()} function to dynamically generate voting percentages based on the actual number of options present. The function now correctly distributes votes among available options, whether there are 2 or 4 choices.
+\end{fixbox}
+
+\subsection{Duplicate Questions in Question Bank}
+
+\begin{issuebox}
+Three questions appeared in both the HARD and EXTREME difficulty categories:
+\begin{enumerate}
+    \item ``Which country produces the most cement?''
+    \item ``Which of the following is NOT a key benefit of 3D printed construction in the UAE?''
+    \item ``Which of the following is NOT a reason why green cover is important?''
+\end{enumerate}
+This could cause players to encounter the same question twice in a single game, reducing variety and potentially causing confusion.
+\end{issuebox}
+
+\begin{fixbox}
+We removed the duplicate entries from the EXTREME category, keeping them only in the HARD category where they were originally intended. This ensures each question appears only once per game.
+\end{fixbox}
+
+\subsection{Checkpoint Visual Display Bug}
+
+\begin{issuebox}
+The money ladder was incorrectly highlighting checkpoint levels. The code was applying the checkpoint styling to the level \textit{before} the actual checkpoint instead of the checkpoint level itself. This visual error could mislead players about which levels were safe points.
+\end{issuebox}
+
+\begin{fixbox}
+We corrected the \texttt{updateMoneyLadder()} function to apply the checkpoint class directly to levels that have the \texttt{checkpoint: true} property. We also updated the CSS to provide clear visual distinction for checkpoint levels with a dashed orange border and semi-transparent background.
+\end{fixbox}
+
+% ============================================================
+\section{Security Improvements}
+% ============================================================
+
+\subsection{Input Sanitization for Player Names}
+
+\begin{issuebox}
+Player names entered for the leaderboard and certificate were being used directly without any sanitization. This created a potential Cross-Site Scripting (XSS) vulnerability where malicious users could inject HTML or JavaScript code through the name input field.
+\end{issuebox}
+
+\begin{fixbox}
+We implemented a \texttt{sanitizeInput()} utility function that escapes HTML entities in user input. This function is now applied to all player name inputs before they are:
+\begin{itemize}
+    \item Displayed on the certificate
+    \item Stored in the Firebase database
+    \item Rendered anywhere in the application
+\end{itemize}
+Additionally, we added validation for leaderboard initials to only accept letters (A-Z), rejecting any special characters or numbers.
+\end{fixbox}
+
+% ============================================================
+\section{Code Quality Improvements}
+% ============================================================
+
+\subsection{Removal of Dead Code}
+
+\begin{issuebox}
+The codebase contained commented-out code blocks and development comments that should not be present in production:
+\begin{itemize}
+    \item A large commented-out \texttt{moneyLadder} array with an old naming scheme
+    \item A developer comment: ``// add new question in here in between the category you want''
+\end{itemize}
+\end{issuebox}
+
+\begin{fixbox}
+All commented-out code blocks and development notes were removed from the production codebase, resulting in cleaner, more maintainable code.
+\end{fixbox}
+
+\subsection{Inline JavaScript Removal}
+
+\begin{issuebox}
+The HTML file contained an inline \texttt{<script>} tag using \texttt{document.write()} to display the certificate date. This is considered a poor practice as it:
+\begin{itemize}
+    \item Mixes presentation with logic
+    \item Can cause rendering issues
+    \item Makes the code harder to maintain
+\end{itemize}
+\end{issuebox}
+
+\begin{fixbox}
+We replaced the inline script with a proper DOM manipulation approach. The certificate date is now set dynamically in the \texttt{DOMContentLoaded} event handler within the main JavaScript file, using a dedicated element with the ID \texttt{certificateDate}.
+\end{fixbox}
+
+% ============================================================
+\section{New Features Added}
+% ============================================================
+
+\subsection{Sound Toggle Button}
+
+Players can now mute or unmute all game sounds using a toggle button on the start screen.
+
+\textbf{Implementation details:}
+\begin{itemize}
+    \item Added a ``Sound: ON/OFF'' toggle button in the top-right corner
+    \item Created a global \texttt{isMuted} state variable
+    \item Implemented a \texttt{playSound()} helper function that respects the mute state
+    \item Added visual feedback with color change when muted (red tint)
+    \item The toggle persists throughout the game session
+\end{itemize}
+
+\subsection{Safe Sound Playback}
+
+\begin{issuebox}
+Modern browsers often block automatic audio playback until the user interacts with the page. The original code called \texttt{.play()} directly on audio elements, which could throw unhandled promise rejection errors in the console.
+\end{issuebox}
+
+\begin{fixbox}
+We created a \texttt{playSound()} wrapper function that:
+\begin{itemize}
+    \item Checks the mute state before attempting playback
+    \item Wraps the \texttt{.play()} call in a try-catch to handle browser restrictions gracefully
+    \item Logs any playback issues to the console without crashing the application
+\end{itemize}
+\end{fixbox}
+
+\subsection{Keyboard Navigation}
+
+Players can now navigate and play the entire game using only their keyboard.
+
+\textbf{Controls implemented:}
+\begin{itemize}
+    \item \textbf{A, B, C, D} or \textbf{1, 2, 3, 4} -- Select answer options
+    \item \textbf{Enter} -- Continue after viewing result modal
+    \item \textbf{Tab} -- Navigate between interactive elements
+    \item \textbf{Space/Enter} -- Activate focused buttons
+\end{itemize}
+
+\subsection{Excel/CSV Question Loading}
+
+Questions can now be managed through an external spreadsheet file, making it easy for non-developers to add, edit, or remove questions without touching the code.
+
+\textbf{How it works:}
+\begin{itemize}
+    \item Questions are stored in \texttt{questions.xlsx} or \texttt{questions.csv} in the project folder
+    \item The game automatically loads questions when the page opens
+    \item Changes to the spreadsheet take effect on the next page refresh
+    \item If the file is missing or corrupted, the game falls back to built-in default questions
+\end{itemize}
+
+\textbf{Spreadsheet format:}
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Column} & \textbf{Description} \\
+\midrule
+Difficulty & EASY, MEDIUM, or HARD \\
+Question & The question text \\
+Option A & First answer choice \\
+Option B & Second answer choice \\
+Option C & Third answer choice (leave empty for True/False) \\
+Option D & Fourth answer choice (leave empty for True/False) \\
+Correct Answer & 0 for A, 1 for B, 2 for C, 3 for D \\
+Fun Fact & Educational fact shown after answering \\
+\bottomrule
+\end{tabular}
+\caption{Excel/CSV column format for questions}
+\end{table}
+
+\textbf{Technical implementation:}
+\begin{itemize}
+    \item Uses the SheetJS library (xlsx.js) to parse Excel and CSV files
+    \item Asynchronous loading with a ``Loading...'' state on the Start button
+    \item Automatic detection of True/False questions (2 options vs 4 options)
+    \item Console logging for debugging question counts
+\end{itemize}
+
+% ============================================================
+\section{Accessibility Enhancements}
+% ============================================================
+
+We implemented comprehensive accessibility improvements to ensure the game is usable by people with disabilities, following WCAG (Web Content Accessibility Guidelines) principles.
+
+\subsection{ARIA Labels and Roles}
+
+Added appropriate ARIA attributes throughout the application:
+
+\begin{itemize}
+    \item \textbf{Dialogs:} All modals now have \texttt{role="dialog"} with proper \texttt{aria-labelledby} references
+    \item \textbf{Buttons:} Interactive elements have descriptive \texttt{aria-label} attributes
+    \item \textbf{Timer:} The countdown timer has \texttt{role="timer"} and \texttt{aria-live="polite"} for screen reader announcements
+    \item \textbf{Leaderboard:} Table headers include \texttt{scope="col"} for proper table navigation
+    \item \textbf{Options:} Answer choices have \texttt{role="button"} and descriptive labels
+    \item \textbf{Menus:} Lifelines dropdown uses \texttt{role="menu"} with \texttt{aria-haspopup} and \texttt{aria-expanded}
+\end{itemize}
+
+\subsection{Focus Management}
+
+\begin{itemize}
+    \item Added visible focus indicators with a 3px orange outline
+    \item Implemented \texttt{:focus-visible} to show outlines only for keyboard navigation
+    \item Answer options now have \texttt{tabindex="0"} for keyboard focus
+    \item Created a \texttt{.visually-hidden} CSS class for screen reader-only content
+\end{itemize}
+
+\subsection{Semantic HTML}
+
+\begin{itemize}
+    \item Changed generic \texttt{<div>} elements to semantic equivalents where appropriate
+    \item Game container changed to \texttt{<main>} element
+    \item Money ladder changed to \texttt{<aside>} element
+    \item Modal titles changed from \texttt{<div>} to proper heading elements (\texttt{<h1>}, \texttt{<h2>})
+    \item Toggle buttons changed from \texttt{<div>} to \texttt{<button>} elements
+\end{itemize}
+
+% ============================================================
+\section{CSS Improvements}
+% ============================================================
+
+\subsection{Focus Styles}
+
+Added comprehensive focus styles for keyboard navigation:
+
+\begin{lstlisting}[language=CSS]
+:focus-visible {
+    outline: 3px solid var(--primary-accent);
+    outline-offset: 2px;
+}
+
+.option:focus-visible {
+    outline: 3px solid var(--secondary-accent);
+    border-color: var(--primary-accent);
+    background: white;
+}
+\end{lstlisting}
+
+\subsection{Checkpoint Styling}
+
+Updated checkpoint level styling to be more visually distinct:
+
+\begin{lstlisting}[language=CSS]
+.checkpoint {
+    background: rgba(255, 152, 0, 0.3);
+    border: 2px dashed var(--primary-accent);
+    font-weight: 700;
+}
+\end{lstlisting}
+
+\subsection{Sound Toggle Styling}
+
+Added styles for the new sound toggle button:
+
+\begin{lstlisting}[language=CSS]
+.sound-toggle.muted {
+    background: #ffcccc;
+    border-color: var(--incorrect-color);
+}
+\end{lstlisting}
+
+% ============================================================
+\section{Files Modified}
+% ============================================================
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{10cm}@{}}
+\toprule
+\textbf{File} & \textbf{Changes Made} \\
+\midrule
+\texttt{script.js} & Bug fixes for lifelines, input sanitization, sound system, keyboard navigation, ARIA updates, Excel/CSV question loading \\
+\texttt{style.css} & Focus styles, accessibility classes, sound toggle styling, checkpoint fixes \\
+\texttt{index.html} & ARIA attributes, semantic HTML improvements, sound toggle button, SheetJS library \\
+\texttt{questions.csv} & New file containing all questions in spreadsheet format \\
+\bottomrule
+\end{tabular}
+\caption{Summary of modified and created files}
+\end{table}
+
+\textbf{Note:} Users can convert \texttt{questions.csv} to \texttt{questions.xlsx} by opening it in Excel and saving as an Excel Workbook. The game will automatically detect and load whichever format is available.
+
+% ============================================================
+\section{Testing Recommendations}
+% ============================================================
+
+To ensure all fixes work correctly, we recommend testing the following scenarios:
+
+\begin{enumerate}
+    \item \textbf{True/False Questions:} Use 50/50 and Audience Insight lifelines on True/False questions to verify they work correctly
+    \item \textbf{Keyboard Navigation:} Complete an entire game using only keyboard controls
+    \item \textbf{Screen Reader:} Test with a screen reader (NVDA, VoiceOver, or JAWS) to verify ARIA labels are announced correctly
+    \item \textbf{Sound Toggle:} Verify sounds can be muted and unmuted, and the setting persists during gameplay
+    \item \textbf{Leaderboard Input:} Attempt to enter special characters in the initials field to verify validation works
+    \item \textbf{Checkpoint Levels:} Verify checkpoint levels (8,000 RC and 150,000 RC) are visually distinct
+    \item \textbf{20-Question Completion:} Verify the game continues through all 20 questions even with wrong answers
+    \item \textbf{Prize Movement:} Confirm correct answers move up the ladder and wrong answers keep you at the same level
+    \item \textbf{Question Cooldown:} Play multiple games and verify that questions from recent games do not repeat
+    \item \textbf{Level-Based Difficulty:} Verify that difficulty changes based on prize level (get wrong answers intentionally to confirm you stay in EASY territory)
+\end{enumerate}
+
+% ============================================================
+\section{Major Game Logic Overhaul}
+% ============================================================
+
+A comprehensive redesign of the game's core mechanics was implemented to provide a more engaging and replayable experience.
+
+\subsection{New 20-Question Format}
+
+\begin{issuebox}
+The original game would end immediately when a player answered incorrectly. This led to frustrating experiences where players could be eliminated early without getting to experience the full range of questions.
+\end{issuebox}
+
+\begin{fixbox}
+The game now features a fixed 20-question format:
+\begin{itemize}
+    \item \textbf{8 EASY questions} (questions 1--8)
+    \item \textbf{7 MEDIUM questions} (questions 9--15)
+    \item \textbf{5 HARD questions} (questions 16--20)
+\end{itemize}
+Players answer all 20 questions regardless of whether they answer correctly or incorrectly. This ensures everyone gets the full educational experience while still maintaining competitive scoring.
+\end{fixbox}
+
+\subsection{Level-Based Difficulty System}
+
+Questions are dynamically selected based on the player's \textbf{current prize level}, not the question number. This means a player's performance directly affects which questions they receive:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cll@{}}
+\toprule
+\textbf{Prize Level} & \textbf{Difficulty Pool} & \textbf{Effect} \\
+\midrule
+0--7 & EASY & Player stays in easy zone if struggling \\
+8--14 & MEDIUM & Reached first checkpoint territory \\
+15--20 & HARD & Top tier, maximum challenge \\
+\bottomrule
+\end{tabular}
+\caption{Level-based difficulty mapping}
+\end{table}
+
+This creates a dynamic experience where:
+\begin{itemize}
+    \item Players who answer correctly progress to harder questions
+    \item Players who struggle stay in easier territory, getting more practice
+    \item A player could theoretically stay in EASY for all 20 questions if they keep getting wrong answers
+    \item Conversely, a skilled player reaches HARD questions quickly by climbing the ladder
+\end{itemize}
+
+\subsection{Prize Movement}
+
+\begin{issuebox}
+The previous system would end the game when a player answered incorrectly.
+\end{issuebox}
+
+\begin{fixbox}
+The new system implements a simple climb-only movement:
+\begin{itemize}
+    \item \textbf{Correct answer:} Player moves UP one level on the prize ladder
+    \item \textbf{Wrong answer:} Player stays at the same level (no falling back)
+\end{itemize}
+This creates an encouraging experience where players can only improve their score, while still being challenged by harder questions as they climb higher.
+\end{fixbox}
+
+\subsection{Updated Prize Ladder}
+
+The money ladder was expanded to accommodate the 20-question format:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}rlrl@{}}
+\toprule
+\textbf{Level} & \textbf{Prize} & \textbf{Level} & \textbf{Prize} \\
+\midrule
+0 & 0 RC & 11 & 20,000 RC \\
+1 & 100 RC & 12 & 32,000 RC \\
+2 & 200 RC & 13 & 64,000 RC \\
+3 & 400 RC & 14 & 100,000 RC \\
+4 & 800 RC & 15 & 150,000 RC \checkmark \\
+5 & 1,500 RC & 16 & 250,000 RC \\
+6 & 3,000 RC & 17 & 500,000 RC \\
+7 & 5,000 RC & 18 & 750,000 RC \\
+8 & 8,000 RC \checkmark & 19 & 900,000 RC \\
+9 & 10,000 RC & 20 & 1,000,000 RC \\
+10 & 15,000 RC & & \\
+\bottomrule
+\end{tabular}
+\caption{Updated prize ladder (\checkmark = checkpoint)}
+\end{table}
+
+\subsection{5-Game Question Cooldown System}
+
+To maximize replay value and prevent repetition, we implemented a sophisticated question cooldown system:
+
+\textbf{How it works:}
+\begin{enumerate}
+    \item When questions are selected for a game, they are marked with a 5-game cooldown
+    \item Each time a new game starts, all cooldowns are decremented by 1
+    \item Questions with an active cooldown (>0) cannot be selected
+    \item After 5 games, the cooldown expires and the question becomes available again
+\end{enumerate}
+
+\textbf{Technical implementation:}
+\begin{itemize}
+    \item Uses \texttt{localStorage} for persistence across browser sessions
+    \item Questions are identified by a hash of their text content
+    \item Cooldown data is stored as JSON: \texttt{\{questionId: cooldownValue\}}
+    \item Automatic fallback if localStorage is unavailable or full
+\end{itemize}
+
+\begin{lstlisting}[language=JavaScript,caption=Question cooldown functions]
+function getQuestionId(question) {
+    let hash = 0;
+    const str = question.question;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return 'q_' + Math.abs(hash).toString(36);
+}
+
+function isQuestionAvailable(question) {
+    const cooldowns = getQuestionCooldowns();
+    const id = getQuestionId(question);
+    return !cooldowns[id] || cooldowns[id] <= 0;
+}
+\end{lstlisting}
+
+\subsection{Difficulty Pool Consolidation}
+
+\begin{issuebox}
+The original game had four difficulty levels: EASY, MEDIUM, HARD, and EXTREME. However, the EXTREME category had relatively few questions, making it difficult to ensure variety at the highest levels.
+\end{issuebox}
+
+\begin{fixbox}
+The EXTREME difficulty level was merged into HARD:
+\begin{itemize}
+    \item All former EXTREME questions now appear in the HARD pool
+    \item This increases the HARD question variety significantly
+    \item The CSV file was updated to change all ``EXTREME'' labels to ``HARD''
+    \item Three difficulty levels remain: EASY, MEDIUM, and HARD
+\end{itemize}
+\end{fixbox}
+
+\subsection{Dynamic Question Selection Algorithm}
+
+Questions are selected \textbf{dynamically} during gameplay, not pre-selected at the start. For each question:
+
+\begin{enumerate}
+    \item Determine the difficulty pool based on current prize level (0--7 = EASY, 8--14 = MEDIUM, 15--20 = HARD)
+    \item Filter the pool to exclude:
+        \begin{itemize}
+            \item Questions already used in the current game
+            \item Questions on cooldown from previous games
+        \end{itemize}
+    \item Randomly select one question from the filtered pool
+    \item Display the question and record it as used
+    \item At game end, mark all 20 used questions with a 5-game cooldown
+\end{enumerate}
+
+\textbf{Fallback behavior:} If insufficient questions are available:
+\begin{itemize}
+    \item First, ignore cooldowns but still avoid in-game repeats
+    \item If still insufficient, allow questions from any cooldown state
+    \item Console warnings are logged for debugging
+\end{itemize}
+
+This approach ensures that the question difficulty always matches the player's current standing on the prize ladder.
+
+% ============================================================
+\section{Future Improvement Suggestions}
+% ============================================================
+
+Based on our analysis, we recommend considering the following enhancements for future development:
+
+\begin{enumerate}
+    \item \textbf{Walk Away Feature:} Allow players to cash out their current winnings at any time
+    \item \textbf{Difficulty Selection:} Let players choose their starting difficulty level
+    \item \textbf{Question Categories:} Allow players to select specific topics (solar, wind, UAE facts, etc.)
+    \item \textbf{Progressive Web App (PWA):} Add offline support and installability
+    \item \textbf{Dark Mode:} Implement a dark theme option for reduced eye strain
+    \item \textbf{Localization:} Add Arabic language support for UAE users
+    \item \textbf{More Questions:} Expand the question bank from ~100 to 200+ questions
+    \item \textbf{Analytics:} Implement proper analytics to track player engagement
+\end{enumerate}
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+The ``Watt's the Answer?'' game has been significantly improved through this development cycle. All critical bugs have been resolved, security vulnerabilities have been addressed, and the application is now much more accessible to users with disabilities.
+
+The codebase is cleaner, more maintainable, and follows modern web development best practices. The game should now provide a smooth, inclusive experience for all players while effectively educating them about sustainability and renewable energy.
+
+\vspace{1cm}
+\hrule
+\vspace{0.5cm}
+\textit{This report will be updated as additional improvements are made to the project.}
+
+\end{document}

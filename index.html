@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission Clean Energy </title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="assets/reem-logo.png" />
+  <!-- SheetJS library for reading Excel files -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="modal active" id="startScreen" role="dialog" aria-labelledby="startScreenTitle">
+    <div class="modal-content">
+      <div class="top-toggles">
+        <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">Sound: ON</button>
+      </div>
+
+      <div class="game-titles">
+        <h1 class="game-main-title" id="startScreenTitle">Mission Clean Energy</h1>
+         <div class="subtitle-logo-container">
+            <span class="subtitle-text">by</span>
+            <img src="assets/reem-logo.png" alt="RAK Municipality REEM Logo" class="start-screen-logo">
+        </div>
+      </div>
+      <div class="start-buttons" role="group" aria-label="Game options">
+        <button class="modal-button" id="startGameBtn" aria-label="Start a new game">Start Game</button>
+        <button class="modal-button" id="leaderboardBtn" aria-label="View leaderboard">Leaderboard</button>
+        <button class="modal-button" id="helpBtn" aria-label="View game rules and information">More Info</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="leaderboardModal" role="dialog" aria-labelledby="leaderboardTitle">
+    <div class="modal-content">
+      <h2 class="modal-title" id="leaderboardTitle">Top 15 Players</h2>
+      <div class="leaderboard-container">
+        <table class="leaderboard-table" id="leaderboardTable" aria-label="Leaderboard scores">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Name</th>
+              <th scope="col">Time</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTableBody">
+          </tbody>
+        </table>
+      </div>
+      <button class="modal-button" id="backToStartBtn" aria-label="Return to main menu">Back</button>
+    </div>
+  </div>
+
+<div class="modal" id="helpModal" role="dialog" aria-labelledby="helpTitle">
+  <div class="modal-content">
+    <h2 class="modal-title" id="helpTitle">More Info</h2>
+    <div class="help-content">
+
+      <div class="help-section">
+        <h3>🎯 The Goal</h3>
+        <p>Test your knowledge on sustainability and energy to climb the money ladder. Answer <strong>20 questions</strong> to maximize your winnings and aim for the grand prize of <strong>1,000,000 Reem Coins!</strong></p>
+      </div>
+
+      <div class="help-section">
+        <h3>⚙️ How It Works</h3>
+        <ul>
+          <li><strong>20 Questions:</strong> Each game has 20 questions. You'll answer all 20 regardless of right or wrong!</li>
+          <li><strong>Climb the Ladder:</strong> Correct answers move you UP the ladder. Wrong answers keep you at the same level — no falling back!</li>
+          <li><strong>Difficulty by Level:</strong> Your prize level determines question difficulty! Levels 0-7 give EASY questions, 8-14 give MEDIUM, and 15-20 give HARD. Keep winning to face harder questions!</li>
+          <li><strong>Beat the Clock:</strong> You have <strong>30 seconds</strong> to answer each question. If the timer runs out, it counts as a wrong answer!</li>
+          <li><strong>Milestones:</strong> Key milestones at <strong>8,000 Reem Coins</strong> and <strong>150,000 Reem Coins</strong> mark your progress!</li>
+          <li><strong>Fresh Questions:</strong> Questions you've seen won't repeat for 5 games, keeping each playthrough fresh!</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+          <h3>🆘 Lifelines</h3>
+          <p>You get one of each lifeline per game. Use them wisely!</p>
+          <ul class="lifeline-list">
+              <li><strong>Elimination:</strong> Removes one random incorrect answer to improve your odds.</li>
+              <li><strong>Add Time:</strong> Adds an extra 30 seconds to the clock when you need more time to think.</li>
+              <li><strong>Skip Question:</strong> Skip the current question and move to the next one without losing progress.</li>
+          </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🏆 Winning & Glory</h3>
+        <p>After your game ends, you can:</p>
+        <ul>
+          <li><strong>Download a Certificate:</strong> Get a personalized certificate to celebrate the amount of Reem Coins you've won.</li>
+          <li><strong>Join the Leaderboard:</strong> If your score is high enough to make the Top 15, you can add your initials to the leaderboard for all to see! Your total time is used as a tie-breaker, so answer quickly and accurately!</li>
+        </ul>
+      </div>
+
+<div class="help-footer">
+    <h4>Terms & Conditions</h4>
+    <p>
+        This game is intended for educational and entertainment purposes only. The Reem Coins (RC) are a virtual currency within the game and hold no real-world monetary value.
+    </p>
+    <p> -------</p>
+    <h4>Acknowledgements</h4>
+    <p>
+        Developed and enriched by passionate volunteers: 
+    </p>
+    <p><strong>Adam Ghafur </strong> </p>
+    <p><strong>Anas Msimir </strong> </p>
+    <p><strong>Hoor Khleifat </strong> </p>
+    <p><strong>Syed Arhaan Ahmed </strong> </p>
+
+</div>
+    </div>
+    
+    <button class="modal-button" id="backToStartFromHelpBtn" aria-label="Return to main menu">Back</button>
+  </div>
+</div>
+
+  <main class="container" id="gameContainer" role="main">
+    <div class="game-area">
+      <button class="exit-button" id="exitButton" aria-label="Exit game and return to main menu">Exit Game</button>
+
+      <div class="game-logo-button">
+        <img src="assets/reem-logo.png" alt="Reem Logo" />
+      </div>
+
+      <div class="logo">
+        <div class="game-titles">
+           <span class="game-main-title">Mission Clean Energy</span>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar easy" id="progressBar" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Question 0 / 20</div>
+      </div>
+
+      <!-- Zone transition notification -->
+      <div class="zone-notification" id="zoneNotification">
+        <span class="zone-icon"></span>
+        <span class="zone-text"></span>
+      </div>
+
+      <div class="lifelines-container">
+        <button class="lifelines-button" aria-haspopup="true" aria-expanded="false" aria-label="Open lifelines menu">Lifelines</button>
+        <div class="lifelines-dropdown" id="lifelinesDropdown" role="menu" aria-label="Available lifelines">
+            <button class="lifeline" id="fiftyFifty" role="menuitem" aria-label="Use 50/50 elimination lifeline">Elimination</button>
+            <button class="lifeline" id="addTime" role="menuitem" aria-label="Add extra time to the timer">Add Time</button>
+            <button class="lifeline" id="skipQuestion" role="menuitem" aria-label="Skip the current question">Skip Question</button>
+        </div>
+      </div>
+      <div class="question-timer lifeline" id="questionTimer" role="timer" aria-live="polite" aria-label="Time remaining">30</div>
+
+      <div class="question-container" role="region" aria-label="Question area">
+        <div class="level-indicator" id="levelIndicator" aria-live="polite">EASY LEVEL</div>
+        <div class="question" id="question" aria-live="polite">Loading question...</div>
+        <div class="options" id="options" role="group" aria-label="Answer options - use keys A, B, C, D or 1, 2, 3, 4 to select"></div>
+      </div>
+    </div>
+
+    <aside class="money-ladder" id="moneyLadder" role="complementary" aria-label="Prize money ladder"></aside>
+  </main>
+
+  <div class="modal" id="resultModal" role="dialog" aria-labelledby="resultTitle" aria-describedby="resultMessage">
+    <div class="modal-content">
+      <h2 class="modal-title" id="resultTitle">Result</h2>
+      <div class="modal-message" id="resultMessage" aria-live="polite">Your answer was correct!</div>
+      <button class="modal-button" id="resultButton" aria-label="Continue to next question">Continue</button>
+    </div>
+  </div>
+
+  <div class="modal" id="certificateModal" role="dialog" aria-labelledby="certificateTitle">
+    <div class="modal-content">
+
+      <div class="certificate-wrapper" role="img" aria-label="Your achievement certificate">
+        <div class="certificate-content">
+            <div class="certificate-header">
+                <div class="logo-container">
+                    <img src="assets/rak-logo.png" alt="RAK Municipality Logo" class="certificate-logo">
+                    <img src="assets/reem-logo.png" alt="Reem Logo" class="certificate-logo">
+                </div>
+            </div>
+
+            <div class="certificate-body">
+                <h2 class="main-title" id="certificateTitle">Certificate of Achievement</h2>
+                <div class="game-title">Mission Clean Energy</div>
+                <div class="presented-text">This certificate is awarded to</div>
+
+                <div class="recipient-name" id="certificateName">Player Name</div>
+
+                <div class="achievement-text">
+                    For your excellent achievement in the game, winning a grand total of:
+                </div>
+
+                <div class="winning-amount" id="certificateAmount">0 RC</div>
+            </div>
+
+            <div class="certificate-footer">
+                <span>Date Awarded: <span id="certificateDate"></span></span>
+            </div>
+        </div>
+      </div>
+
+      <div class="name-input-container" id="nameInputContainer" style="display: none;">
+        <label for="nameInput" class="visually-hidden">Enter your name</label>
+        <input type="text" class="name-input" id="nameInput" placeholder="Enter your name" aria-describedby="validationMessage" />
+        <small class="validation-message" id="validationMessage" style="display: none; color: red;" role="alert"></small>
+        <button class="modal-button" id="submitNameBtn">Submit</button>
+      </div>
+
+      <div class="certificate-buttons" role="group" aria-label="Certificate actions">
+        <button class="modal-button" id="addToLeaderboardBtn" style="display: none;" aria-label="Add your score to the leaderboard">Add to Leaderboard</button>
+        <button class="modal-button" id="downloadCertificateBtn" aria-label="Download your certificate">Download Certificate</button>
+        <button class="modal-button" id="playAgain" aria-label="Start a new game">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+  <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

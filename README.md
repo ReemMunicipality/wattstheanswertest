@@ -10,7 +10,7 @@ Players answer 20 questions to climb a prize ladder and earn virtual "Reem Coins
 - **3 difficulty zones:** Easy, Medium, Hard
 - **3 lifelines:** Elimination, Add Time (+30s), Skip Question
 - **30-second timer** per question
-- **Firebase leaderboard** (top 15 scores)
+- **Supabase leaderboard** (top 15 scores)
 - **Certificate generation** at game end
 - **5-game question cooldown** to prevent repetition
 
@@ -46,9 +46,9 @@ MissionCleanEnergy/
 ### Technical Details
 
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-- **Backend:** Firebase Realtime Database (for leaderboard)
+- **Backend:** Supabase (PostgreSQL database for leaderboard)
 - **Question Source:** `questions.csv` file (202 questions)
-- **Libraries:** SheetJS (for CSV parsing), Google Fonts
+- **Libraries:** SheetJS (for CSV parsing), Supabase JS Client, Google Fonts
 
 ---
 
@@ -164,20 +164,19 @@ npx serve
 | Data | Storage Location | Notes |
 |------|------------------|-------|
 | Questions | `questions.csv` (local file) | Edit to add/remove questions |
-| Leaderboard | Firebase Realtime Database | Shared across all users |
+| Leaderboard | Supabase (PostgreSQL) | Shared across all users |
 | Question cooldowns | Browser localStorage | Prevents question repeats for 5 games |
 
-### Firebase Configuration
+### Supabase Configuration
 
-The leaderboard is stored in Firebase. The configuration is in `script.js`:
+The leaderboard is stored in Supabase. The configuration is in `script.js`:
 
 ```javascript
-const firebaseConfig = {
-    apiKey: "AIzaSyDsqFKz2YA-peCLW2JDIr1kqXWtE2wdR_I",
-    databaseURL: "https://reem-rak-million-game-default-rtdb.firebaseio.com",
-    projectId: "reem-rak-million-game"
-};
+const SUPABASE_URL = 'https://foovsizagoilfwoocoxo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 ```
+
+To access the Supabase dashboard: https://supabase.com/dashboard/project/foovsizagoilfwoocoxo
 
 ---
 

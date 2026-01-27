@@ -1,23 +1,12 @@
-// Firebase SDK modules
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+// Supabase SDK
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// Firebase configuration object
-const firebaseConfig = {
-    apiKey: "AIzaSyDsqFKz2YA-peCLW2JDIr1kqXWtE2wdR_I",
-    authDomain: "reem-rak-million-game.firebaseapp.com",
-    databaseURL: "https://reem-rak-million-game-default-rtdb.firebaseio.com",
-    projectId: "reem-rak-million-game",
-    storageBucket: "reem-rak-million-game.appspot.com",
-    messagingSenderId: "182423461346",
-    appId: "1:182423461346:web:174aaf2d287b34890fedbb",
-    measurementId: "G-ENV3KCRY68"
-};
+// Supabase configuration
+const SUPABASE_URL = 'https://foovsizagoilfwoocoxo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvb3ZzaXphZ29pbGZ3b29jb3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDA0ODMsImV4cCI6MjA4NTA3NjQ4M30.TqMejiVHrLYvock70HYxpo0lA5T84MgVxK5PCeQsoaY';
 
-// Initialize Firebase services
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const leaderboardRef = ref(db, 'leaderboard');
+// Initialize Supabase client
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Utility Functions ---
 
@@ -1041,19 +1030,18 @@ let previousDifficulty = null;
 // --- Leaderboard Functions ---
 async function checkScoreQualifies(score, time) {
     try {
-        const topScoresQuery = query(leaderboardRef, orderByChild('score'), limitToLast(15));
-        const snapshot = await get(topScoresQuery);
-        
-        const board = [];
-        if (snapshot.exists()) {
-            snapshot.forEach(childSnapshot => {
-                board.push(childSnapshot.val());
-            });
-        }
+        const { data, error } = await supabase
+            .from('leaderboard')
+            .select('score, time')
+            .order('score', { ascending: false })
+            .order('time', { ascending: true })
+            .limit(15);
 
-        if (board.length < 15) return true;
-        
-        const lowestEntry = board[0];
+        if (error) throw error;
+
+        if (!data || data.length < 15) return true;
+
+        const lowestEntry = data[data.length - 1];
 
         if (score > lowestEntry.score) return true;
         if (score === lowestEntry.score && time < lowestEntry.time) return true;
@@ -1067,16 +1055,14 @@ async function checkScoreQualifies(score, time) {
 
 async function addScoreToLeaderboard(name, score, amount, time) {
     try {
-        const newScoreRef = push(leaderboardRef);
-        await set(newScoreRef, {
-            name,
-            score,
-            amount,
-            time,
-        });
-        console.log("Score successfully added to Realtime Database!");
+        const { error } = await supabase
+            .from('leaderboard')
+            .insert([{ name, score, amount, time }]);
+
+        if (error) throw error;
+        console.log("Score successfully added to Supabase!");
     } catch (error) {
-        console.error("Error adding document: ", error);
+        console.error("Error adding score: ", error);
     }
 }
 
@@ -1087,28 +1073,24 @@ async function showLeaderboard() {
     leaderboardTableBody.innerHTML = '<tr><td colspan="4">Loading scores...</td></tr>';
 
     try {
-        const topScoresQuery = query(leaderboardRef, orderByChild('score'), limitToLast(15));
-        const snapshot = await get(topScoresQuery);
+        const { data, error } = await supabase
+            .from('leaderboard')
+            .select('*')
+            .order('score', { ascending: false })
+            .order('time', { ascending: true })
+            .limit(15);
+
+        if (error) throw error;
 
         leaderboardTableBody.innerHTML = '';
-        
-        if (!snapshot.exists()) {
+
+        if (!data || data.length === 0) {
             leaderboardTableBody.innerHTML = '<tr><td colspan="4">No scores yet. Be the first!</td></tr>';
             return;
         }
 
-        const board = [];
-        snapshot.forEach(childSnapshot => {
-            board.push(childSnapshot.val());
-        });
-
-        board.sort((a, b) => {
-            if (a.score !== b.score) return b.score - a.score;
-            return a.time - b.time;
-        });
-
         let rank = 1;
-        board.forEach(entry => {
+        data.forEach(entry => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${rank}.</td>

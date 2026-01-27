@@ -62,7 +62,8 @@
 }
 
 .game-logo-button img {
-  height: 70px;
+  height: auto;
+  max-width: 150px;
   display: block;
 }
 
@@ -793,7 +794,9 @@ body {
 }
 
 #certificateModal .certificate-logo {
-    max-height: 50px;
+    max-height: 40px;
+    max-width: 200px;
+    height: auto;
 }
 
 #certificateModal .main-title {
@@ -931,7 +934,9 @@ body {
   opacity: 0.75;
 }
 .start-screen-logo {
-  max-height: 80px;
+  max-height: 60px;
+  max-width: 250px;
+  height: auto;
   filter: drop-shadow(0px 3px 4px rgba(0, 0, 0, 0.15));
 }
 

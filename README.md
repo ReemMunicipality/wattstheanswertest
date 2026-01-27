@@ -30,8 +30,7 @@ MissionCleanEnergy/
     ├── correct.mp3         # Sound effects
     ├── wrong.mp3
     ├── click.mp3
-    ├── reem-logo.png       # Logos
-    └── rak-logo.png
+    └── reem-logo.png       # RAK Municipality REEM Logo
 ```
 
 ## Changes Made

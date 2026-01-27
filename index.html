@@ -24,6 +24,11 @@
             <img src="assets/reem-logo.png" alt="RAK Municipality REEM Logo" class="start-screen-logo">
         </div>
       </div>
+      <div class="player-name-input">
+        <label for="playerNameInput" class="player-name-label">Enter Your Name</label>
+        <input type="text" id="playerNameInput" class="name-input" placeholder="Your name here..." maxlength="30" aria-required="true" />
+        <small class="name-validation" id="nameValidation" style="display: none; color: #F44336;">Please enter your name to start</small>
+      </div>
       <div class="start-buttons" role="group" aria-label="Game options">
         <button class="modal-button" id="startGameBtn" aria-label="Start a new game">Start Game</button>
         <button class="modal-button" id="leaderboardBtn" aria-label="View leaderboard">Leaderboard</button>

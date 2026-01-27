@@ -974,6 +974,11 @@ let currentQuestionTimeLeft = QUESTION_TIME_LIMIT;
 const startScreen = document.getElementById('startScreen');
 const startGameBtn = document.getElementById('startGameBtn');
 const leaderboardBtn = document.getElementById('leaderboardBtn');
+const playerNameInput = document.getElementById('playerNameInput');
+const nameValidation = document.getElementById('nameValidation');
+
+// Store player name for the session
+let playerName = '';
 const gameContainer = document.getElementById('gameContainer');
 const exitButton = document.getElementById('exitButton');
 const questionElement = document.getElementById('question');
@@ -1398,15 +1403,15 @@ async function showCertificate() {
         // --- Winner's Certificate Text ---
         certModalTitle.textContent = '🏆 Certificate of Excellence 🏆';
         certModalPresentedText.textContent = 'This is proudly awarded to';
-        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the “Mission Clean Energy” challenge and collecting <strong>1,000,000 Reem Coins.</strong>';
-        certificateName.textContent = "Player"; // Default name
+        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Mission Clean Energy" challenge and collecting <strong>1,000,000 Reem Coins.</strong>';
+        certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'none'; // Hide the old amount field
     } else {
         // --- Standard Certificate Text ---
         certModalTitle.textContent = 'Certificate of Achievement';
         certModalPresentedText.textContent = 'This certificate is proudly presented to';
-        certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the “Mission Clean Energy” challenge and collecting';
-        certificateName.textContent = "Player";
+        certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the "Mission Clean Energy" challenge and collecting';
+        certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'block'; // Ensure the old amount field is visible
         certificateAmount.innerHTML = `<strong>${finalWinnings.value.toLocaleString()}</strong> Reem Coins.`;    }
 
@@ -1423,20 +1428,14 @@ async function showCertificate() {
 }
 
 async function downloadCertificate() {
-    // Sanitize the player name to prevent XSS
-    const rawName = nameInput.value.trim() || 'Player';
-    const playerName = sanitizeInput(rawName);
+    // Use the stored player name (already sanitized)
+    const certificatePlayerName = playerName || 'Player';
     const finalWinnings = moneyLadder[currentMoneyIndex];
     let certificateFile = 'certificate.html';
 
     // Use winner certificate for grand prize
     if (finalWinnings.value === 1000000) {
         certificateFile = 'certificate_winner.html';
-    }
-
-    // Update the name on the web view certificate
-    if (rawName) {
-        certificateName.textContent = playerName;
     }
 
     try {
@@ -1448,7 +1447,7 @@ async function downloadCertificate() {
 
         // Replace placeholders with sanitized game data
         certificateHtml = certificateHtml
-            .replace('{{PLAYER_NAME}}', playerName)
+            .replace('{{PLAYER_NAME}}', certificatePlayerName)
             .replace('{{FINAL_AMOUNT}}', finalWinnings.value.toLocaleString());
         // Open a new window and write the final HTML to it
         const printWindow = window.open('', '', 'width=1123,height=794');
@@ -1579,9 +1578,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     startGameBtn.addEventListener('click', () => {
+        // Validate player name
+        const name = playerNameInput.value.trim();
+        if (!name) {
+            nameValidation.style.display = 'block';
+            playerNameInput.style.borderColor = '#F44336';
+            playerNameInput.focus();
+            return;
+        }
+
+        // Store the sanitized player name
+        playerName = sanitizeInput(name);
+        nameValidation.style.display = 'none';
+        playerNameInput.style.borderColor = 'var(--background-dark)';
+
         startScreen.classList.remove('active');
         gameContainer.style.display = 'flex';
         initGame();
+    });
+
+    // Clear validation error when typing
+    playerNameInput.addEventListener('input', () => {
+        if (playerNameInput.value.trim()) {
+            nameValidation.style.display = 'none';
+            playerNameInput.style.borderColor = 'var(--background-dark)';
+        }
     });
 
     leaderboardBtn.addEventListener('click', showLeaderboard);
@@ -1600,63 +1621,52 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         nameInput.placeholder = "Enter 3 Initials";
         nameInput.maxLength = 3;
-        nameInput.value = "";
+        // Pre-fill with first 3 letters of player name
+        const initials = playerName.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
+        nameInput.value = initials;
         submitNameBtn.textContent = "Submit to Leaderboard";
     });
 
     downloadCertificateBtn.addEventListener('click', () => {
-        nameInputMode = 'certificate';
-        certificateButtons.style.display = 'none';
-        nameInputContainer.style.display = 'flex';
-
-        nameInput.placeholder = "Enter Your Full Name";
-        nameInput.removeAttribute('maxLength');
-        nameInput.value = "";
-        submitNameBtn.textContent = "Confirm & Download";
+        // Directly download certificate using stored player name
+        downloadCertificate();
     });
 
     submitNameBtn.addEventListener('click', async () => {
-        // Sanitize and validate input
+        // Sanitize and validate input (for leaderboard initials)
         const rawName = nameInput.value.trim();
-        const playerName = sanitizeInput(rawName);
+        const sanitizedName = sanitizeInput(rawName);
         validationMessage.style.display = 'none';
         nameInput.style.borderColor = 'var(--background-dark)';
 
-        if (nameInputMode === 'leaderboard') {
-            // Validate: only allow letters for initials
-            const initialsOnly = playerName.replace(/[^a-zA-Z]/g, '');
-            if (initialsOnly === '' || initialsOnly.length > 3) {
-                validationMessage.textContent = 'Please enter 1-3 letters only.';
-                validationMessage.style.display = 'block';
-                nameInput.style.borderColor = 'red';
-                return;
-            }
+        // Validate: only allow letters for initials
+        const initialsOnly = sanitizedName.replace(/[^a-zA-Z]/g, '');
+        if (initialsOnly === '' || initialsOnly.length > 3) {
+            validationMessage.textContent = 'Please enter 1-3 letters only.';
+            validationMessage.style.display = 'block';
+            nameInput.style.borderColor = 'red';
+            return;
+        }
 
-            const finalWinnings = moneyLadder[currentMoneyIndex];
+        const finalWinnings = moneyLadder[currentMoneyIndex];
 
-            submitNameBtn.textContent = 'Adding...';
-            submitNameBtn.disabled = true;
+        submitNameBtn.textContent = 'Adding...';
+        submitNameBtn.disabled = true;
 
-            // Format the name like A.G.A.
-            const formattedName = initialsOnly.toUpperCase().split('').join('.');
+        // Format the name like A.G.A.
+        const formattedName = initialsOnly.toUpperCase().split('').join('.');
 
-            await addScoreToLeaderboard(formattedName, finalWinnings.value, finalWinnings.amount, totalGameTime);
-            
-            submitNameBtn.textContent = 'Added!';
+        await addScoreToLeaderboard(formattedName, finalWinnings.value, finalWinnings.amount, totalGameTime);
 
-            
-            setTimeout(() => {
-                nameInputContainer.style.display = 'none';
-                certificateButtons.style.display = 'flex';
-                addToLeaderboardBtn.style.display = 'none';
-                submitNameBtn.disabled = false;
-            }, 1500);
+        submitNameBtn.textContent = 'Added!';
 
-        } else if (nameInputMode === 'certificate') {
-            downloadCertificate();
+        setTimeout(() => {
             nameInputContainer.style.display = 'none';
             certificateButtons.style.display = 'flex';
-        }
+            addToLeaderboardBtn.style.display = 'none';
+            submitNameBtn.disabled = false;
+            submitNameBtn.textContent = 'Submit to Leaderboard';
+        }, 1500);
     });
 
     nameInput.addEventListener('input', () => {

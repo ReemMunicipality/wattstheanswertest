@@ -337,6 +337,8 @@ body {
   z-index: 100;
   opacity: 0;
   transition: opacity 0.3s ease;
+  overflow-y: auto;
+  padding: 20px 0;
 }
 
 .modal.active {
@@ -351,12 +353,15 @@ body {
   padding: 2rem;
   max-width: 600px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
+  margin: auto;
 }
 
 .modal-title {
@@ -691,6 +696,24 @@ body {
     height: 35px;
   }
 
+  .game-logo-button {
+    top: 10px;
+    right: 10px;
+    padding: 5px 8px;
+  }
+
+  .game-logo-button img {
+    max-width: 120px;
+  }
+
+  .progress-container {
+    margin-top: 60px;
+  }
+
+  .logo {
+    display: none;
+  }
+
   .question-container {
     padding: 2rem 1rem 1.5rem 1rem;
     margin-top: 1rem;
@@ -737,6 +760,7 @@ body {
   .modal-content {
     padding: 1.5rem;
     width: 95%;
+    max-height: 85vh;
   }
 
   .modal-title {
@@ -750,6 +774,33 @@ body {
   .modal-button {
     padding: 12px 25px;
     font-size: 0.9rem;
+  }
+
+  #certificateModal .modal-content {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  #certificateModal .certificate-content {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  #certificateModal .recipient-name {
+    font-size: 1.8rem;
+  }
+
+  #certificateModal .main-title {
+    font-size: 1.5rem;
+  }
+
+  .certificate-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .certificate-buttons .modal-button {
+    width: 100%;
   }
 }
 

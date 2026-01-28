@@ -71,16 +71,17 @@ async function loadQuestionsFromFile() {
                 if (!questionBank[difficulty]) return; // Skip invalid difficulties
 
                 // Build options array, filtering out empty options for True/False
+                // Use ?? to handle null/undefined while preserving 0 as valid answer
                 const options = [];
-                const optA = (row['Option A'] || '').toString().trim();
-                const optB = (row['Option B'] || '').toString().trim();
-                const optC = (row['Option C'] || '').toString().trim();
-                const optD = (row['Option D'] || '').toString().trim();
+                const optA = (row['Option A'] ?? '').toString().trim();
+                const optB = (row['Option B'] ?? '').toString().trim();
+                const optC = (row['Option C'] ?? '').toString().trim();
+                const optD = (row['Option D'] ?? '').toString().trim();
 
-                if (optA) options.push(optA);
-                if (optB) options.push(optB);
-                if (optC) options.push(optC);
-                if (optD) options.push(optD);
+                if (optA !== '') options.push(optA);
+                if (optB !== '') options.push(optB);
+                if (optC !== '') options.push(optC);
+                if (optD !== '') options.push(optD);
 
                 // Parse correct answer - handle both letter (A,B,C,D) and number (0,1,2,3) formats
                 let correctAnswer = row['Correct Answer'] || '0';

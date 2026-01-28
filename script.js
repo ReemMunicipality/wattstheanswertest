@@ -1429,58 +1429,71 @@ async function showCertificate() {
 }
 
 async function downloadCertificate() {
-    // Use the stored player name (already sanitized)
-    const certificatePlayerName = playerName || 'Player';
-    const finalWinnings = moneyLadder[currentMoneyIndex];
-    let certificateFile = 'certificate.html';
+    // Use the certificate displayed in the modal to generate an image
+    const certificateWrapper = document.querySelector('#certificateModal .certificate-wrapper');
 
-    // Use winner certificate for grand prize
-    if (finalWinnings.value === 1000000) {
-        certificateFile = 'certificate_winner.html';
+    if (!certificateWrapper) {
+        alert('Sorry, there was an error generating the certificate.');
+        return;
     }
 
     try {
-        const response = await fetch(certificateFile);
-        if (!response.ok) {
-            throw new Error(`Could not load ${certificateFile}`);
-        }
-        let certificateHtml = await response.text();
+        // Show loading state
+        downloadCertificateBtn.textContent = 'Generating...';
+        downloadCertificateBtn.disabled = true;
 
-        // Replace placeholders with sanitized game data
-        certificateHtml = certificateHtml
-            .replace('{{PLAYER_NAME}}', certificatePlayerName)
-            .replace('{{FINAL_AMOUNT}}', finalWinnings.value.toLocaleString());
+        // Generate image from the certificate element
+        const canvas = await html2canvas(certificateWrapper, {
+            scale: 2, // Higher quality
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false
+        });
 
-        // Try to open a new window
-        const printWindow = window.open('', '_blank');
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+        const fileName = `MissionCleanEnergy_Certificate_${playerName.replace(/\s+/g, '_')}.png`;
 
-        // Check if popup was blocked (common on iOS)
-        if (!printWindow || printWindow.closed || typeof printWindow.closed === 'undefined') {
-            // Fallback: Open certificate in same window
-            const blob = new Blob([certificateHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            window.location.href = url;
-            return;
-        }
+        // Check if Web Share API is available (mobile)
+        if (navigator.share && navigator.canShare) {
+            const file = new File([blob], fileName, { type: 'image/png' });
+            const shareData = { files: [file] };
 
-        printWindow.document.write(certificateHtml);
-        printWindow.document.close();
-
-        // Automatically trigger the print dialog (desktop)
-        printWindow.onload = function() {
-            setTimeout(function() {
+            if (navigator.canShare(shareData)) {
                 try {
-                    printWindow.print();
-                } catch (e) {
-                    // Print not supported, just show the certificate
-                    console.log('Print dialog not available');
+                    await navigator.share(shareData);
+                    downloadCertificateBtn.textContent = 'Download Certificate';
+                    downloadCertificateBtn.disabled = false;
+                    return;
+                } catch (shareError) {
+                    // User cancelled or share failed, fall through to download
+                    if (shareError.name === 'AbortError') {
+                        downloadCertificateBtn.textContent = 'Download Certificate';
+                        downloadCertificateBtn.disabled = false;
+                        return;
+                    }
                 }
-            }, 500);
-        };
+            }
+        }
 
-    } catch (error){
-        console.error('Error preparing certificate:', error);
-        alert('Sorry, there was an error downloading the certificate. Please try again.');
+        // Fallback: Direct download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        downloadCertificateBtn.textContent = 'Download Certificate';
+        downloadCertificateBtn.disabled = false;
+
+    } catch (error) {
+        console.error('Error generating certificate:', error);
+        alert('Sorry, there was an error generating the certificate. Please try again.');
+        downloadCertificateBtn.textContent = 'Download Certificate';
+        downloadCertificateBtn.disabled = false;
     }
 }
 

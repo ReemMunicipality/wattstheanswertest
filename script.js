@@ -1450,24 +1450,37 @@ async function downloadCertificate() {
         certificateHtml = certificateHtml
             .replace('{{PLAYER_NAME}}', certificatePlayerName)
             .replace('{{FINAL_AMOUNT}}', finalWinnings.value.toLocaleString());
-        // Open a new window and write the final HTML to it
-        const printWindow = window.open('', '', 'width=1123,height=794');
+
+        // Try to open a new window
+        const printWindow = window.open('', '_blank');
+
+        // Check if popup was blocked (common on iOS)
+        if (!printWindow || printWindow.closed || typeof printWindow.closed === 'undefined') {
+            // Fallback: Open certificate in same window
+            const blob = new Blob([certificateHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.location.href = url;
+            return;
+        }
+
         printWindow.document.write(certificateHtml);
         printWindow.document.close();
 
-        // Automatically trigger the print dialog
+        // Automatically trigger the print dialog (desktop)
         printWindow.onload = function() {
             setTimeout(function() {
-                printWindow.print();
-                printWindow.onafterprint = function() {
-                    printWindow.close();
-                };
+                try {
+                    printWindow.print();
+                } catch (e) {
+                    // Print not supported, just show the certificate
+                    console.log('Print dialog not available');
+                }
             }, 500);
         };
 
     } catch (error){
         console.error('Error preparing certificate:', error);
-        alert('Sorry, there was an error downloading the certificate.');
+        alert('Sorry, there was an error downloading the certificate. Please try again.');
     }
 }
 

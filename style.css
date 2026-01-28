@@ -699,19 +699,32 @@ body {
   .game-logo-button {
     top: 10px;
     right: 10px;
-    padding: 5px 8px;
+    padding: 4px 6px;
+    max-width: 45%;
   }
 
   .game-logo-button img {
-    max-width: 120px;
+    max-width: 100px;
+  }
+
+  .exit-button {
+    max-width: 30%;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 
   .progress-container {
-    margin-top: 80px;
+    margin-top: 20px;
+    position: relative;
+    clear: both;
   }
 
   .logo {
     display: none;
+  }
+
+  .game-area {
+    padding-top: 70px;
   }
 
   .question-container {

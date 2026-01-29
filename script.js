@@ -1428,6 +1428,12 @@ async function showCertificate() {
     certificateModal.classList.add('active');
 }
 
+// Detect if user is on mobile device
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+           || window.innerWidth <= 768;
+}
+
 async function downloadCertificate() {
     // Use the certificate displayed in the modal to generate an image
     const certificateWrapper = document.querySelector('#certificateModal .certificate-wrapper');
@@ -1450,41 +1456,84 @@ async function downloadCertificate() {
             logging: false
         });
 
-        // Convert canvas to blob
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
-        const fileName = `MissionCleanEnergy_Certificate_${playerName.replace(/\s+/g, '_')}.png`;
+        const fileName = `MissionCleanEnergy_Certificate_${playerName.replace(/\s+/g, '_')}`;
 
-        // Check if Web Share API is available (mobile)
-        if (navigator.share && navigator.canShare) {
-            const file = new File([blob], fileName, { type: 'image/png' });
-            const shareData = { files: [file] };
+        if (isMobileDevice()) {
+            // MOBILE: Generate shareable image
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
 
-            if (navigator.canShare(shareData)) {
-                try {
-                    await navigator.share(shareData);
-                    downloadCertificateBtn.textContent = 'Download Certificate';
-                    downloadCertificateBtn.disabled = false;
-                    return;
-                } catch (shareError) {
-                    // User cancelled or share failed, fall through to download
-                    if (shareError.name === 'AbortError') {
+            // Try Web Share API first (native share sheet)
+            if (navigator.share && navigator.canShare) {
+                const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
+                const shareData = { files: [file] };
+
+                if (navigator.canShare(shareData)) {
+                    try {
+                        await navigator.share(shareData);
                         downloadCertificateBtn.textContent = 'Download Certificate';
                         downloadCertificateBtn.disabled = false;
                         return;
+                    } catch (shareError) {
+                        if (shareError.name === 'AbortError') {
+                            downloadCertificateBtn.textContent = 'Download Certificate';
+                            downloadCertificateBtn.disabled = false;
+                            return;
+                        }
                     }
                 }
             }
-        }
 
-        // Fallback: Direct download
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+            // Fallback: Download image
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${fileName}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } else {
+            // DESKTOP: Generate PDF
+            const { jsPDF } = window.jspdf;
+
+            // Create landscape A4 PDF
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Get dimensions
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            // Convert canvas to image and add to PDF
+            const imgData = canvas.toDataURL('image/png', 1.0);
+
+            // Calculate scaling to fit page while maintaining aspect ratio
+            const canvasRatio = canvas.width / canvas.height;
+            const pageRatio = pageWidth / pageHeight;
+
+            let imgWidth, imgHeight, x, y;
+
+            if (canvasRatio > pageRatio) {
+                // Image is wider - fit to width
+                imgWidth = pageWidth - 20; // 10mm margin each side
+                imgHeight = imgWidth / canvasRatio;
+                x = 10;
+                y = (pageHeight - imgHeight) / 2;
+            } else {
+                // Image is taller - fit to height
+                imgHeight = pageHeight - 20; // 10mm margin each side
+                imgWidth = imgHeight * canvasRatio;
+                x = (pageWidth - imgWidth) / 2;
+                y = 10;
+            }
+
+            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+            pdf.save(`${fileName}.pdf`);
+        }
 
         downloadCertificateBtn.textContent = 'Download Certificate';
         downloadCertificateBtn.disabled = false;

@@ -1,4 +1,4 @@
-# Mission Clean Energy
+# Watt's The Answer
 
 An educational web-based trivia game about sustainability and renewable energy, developed for REEM (Ras Al Khaimah Municipality).
 

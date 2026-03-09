@@ -1,7 +1,7 @@
-# Mission Clean Energy - Development Changelog
+# Watt's The Answer - Development Changelog
 
 ## Game Overview
-**Mission Clean Energy** (formerly "Watt's the Answer?") is an educational trivia game about sustainability and renewable energy where players answer questions to climb a prize ladder and earn Reem Coins.
+**Watt's The Answer** (formerly "Mission Clean Energy") is an educational trivia game about sustainability and renewable energy where players answer questions to climb a prize ladder and earn Reem Coins.
 
 ---
 
@@ -139,7 +139,7 @@
    - Celebration animation effect
 
 ### Branding Changes
-- Game renamed from "Watt's the Answer?" to "Mission Clean Energy"
+- Game renamed from "Watt's the Answer?" to "Watt's The Answer"
 - Currency renamed from "RC" to "Reem Coins"
 - Updated all certificates and help text
 
@@ -158,7 +158,7 @@
 ## FILE STRUCTURE
 
 ```
-Mission Clean Energy/
+Watt's The Answer/
 ├── index.html          # Main game HTML
 ├── style.css           # All styling (1100+ lines)
 ├── script.js           # Game logic (1600+ lines)
@@ -205,7 +205,7 @@ Mission Clean Energy/
 ### Running the Game
 Requires a local web server due to ES6 modules and fetch API:
 ```bash
-cd "Mission Clean Energy"
+cd "Watt's The Answer"
 python3 -m http.server 8000
 # Open http://localhost:8000
 ```

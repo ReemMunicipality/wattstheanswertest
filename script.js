@@ -55,7 +55,7 @@ async function loadQuestionsFromFile() {
             const workbook = XLSX.read(data, { type: 'array' });
             const sheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
 
             // Reset question bank
             questionBank = {
@@ -1404,14 +1404,14 @@ async function showCertificate() {
         // --- Winner's Certificate Text ---
         certModalTitle.textContent = '🏆 Certificate of Excellence 🏆';
         certModalPresentedText.textContent = 'This is proudly awarded to';
-        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Mission Clean Energy" challenge and collecting <strong>1,000,000 Reem Coins.</strong>';
+        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Watt\'s The Answer" challenge and collecting <strong>1,000,000 Reem Coins.</strong>';
         certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'none'; // Hide the old amount field
     } else {
         // --- Standard Certificate Text ---
         certModalTitle.textContent = 'Certificate of Achievement';
         certModalPresentedText.textContent = 'This certificate is proudly presented to';
-        certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the "Mission Clean Energy" challenge and collecting';
+        certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the "Watt\'s The Answer" challenge and collecting';
         certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'block'; // Ensure the old amount field is visible
         certificateAmount.innerHTML = `<strong>${finalWinnings.value.toLocaleString()}</strong> Reem Coins.`;    }

@@ -248,7 +248,14 @@ body {
   color: var(--text-dark);
 }
 
-.option:hover,
+@media (hover: hover) {
+  .option:hover {
+    border-color: var(--primary-accent);
+    background: white;
+    transform: translateY(-2px);
+  }
+}
+
 .option:focus-visible {
   border-color: var(--primary-accent);
   background: white;

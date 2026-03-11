@@ -703,27 +703,27 @@ const defaultQuestionBank = {
 };
 
 const moneyLadder = [
-    { amount: "0 Reem Coins", value: 0 },                    // Level 0 - Starting point
-    { amount: "100 Reem Coins", value: 100 },                // Q1 - EASY
-    { amount: "200 Reem Coins", value: 200 },                // Q2 - EASY
-    { amount: "500 Reem Coins", value: 500 },                // Q3 - EASY
-    { amount: "1,000 Reem Coins", value: 1000 },             // Q4 - EASY
-    { amount: "2,000 Reem Coins", value: 2000 },             // Q5 - EASY
-    { amount: "4,000 Reem Coins", value: 4000 },             // Q6 - EASY
-    { amount: "6,000 Reem Coins", value: 6000 },             // Q7 - EASY
-    { amount: "8,000 Reem Coins", value: 8000, checkpoint: true },  // Q8 - EASY (Checkpoint)
-    { amount: "10,000 Reem Coins", value: 10000 },           // Q9 - MEDIUM
-    { amount: "15,000 Reem Coins", value: 15000 },           // Q10 - MEDIUM
-    { amount: "25,000 Reem Coins", value: 25000 },           // Q11 - MEDIUM
-    { amount: "50,000 Reem Coins", value: 50000 },           // Q12 - MEDIUM
-    { amount: "75,000 Reem Coins", value: 75000 },           // Q13 - MEDIUM
-    { amount: "100,000 Reem Coins", value: 100000 },         // Q14 - MEDIUM
-    { amount: "150,000 Reem Coins", value: 150000, checkpoint: true }, // Q15 - MEDIUM (Checkpoint)
-    { amount: "250,000 Reem Coins", value: 250000 },         // Q16 - HARD
-    { amount: "500,000 Reem Coins", value: 500000 },         // Q17 - HARD
-    { amount: "750,000 Reem Coins", value: 750000 },         // Q18 - HARD
-    { amount: "900,000 Reem Coins", value: 900000 },         // Q19 - HARD
-    { amount: "1,000,000 Reem Coins", value: 1000000 }       // Q20 - HARD (Grand Prize)
+    { amount: "0 Points", value: 0 },                    // Level 0 - Starting point
+    { amount: "100 Points", value: 100 },                // Q1 - EASY
+    { amount: "200 Points", value: 200 },                // Q2 - EASY
+    { amount: "500 Points", value: 500 },                // Q3 - EASY
+    { amount: "1,000 Points", value: 1000 },             // Q4 - EASY
+    { amount: "2,000 Points", value: 2000 },             // Q5 - EASY
+    { amount: "4,000 Points", value: 4000 },             // Q6 - EASY
+    { amount: "6,000 Points", value: 6000 },             // Q7 - EASY
+    { amount: "8,000 Points", value: 8000, checkpoint: true },  // Q8 - EASY (Checkpoint)
+    { amount: "10,000 Points", value: 10000 },           // Q9 - MEDIUM
+    { amount: "15,000 Points", value: 15000 },           // Q10 - MEDIUM
+    { amount: "25,000 Points", value: 25000 },           // Q11 - MEDIUM
+    { amount: "50,000 Points", value: 50000 },           // Q12 - MEDIUM
+    { amount: "75,000 Points", value: 75000 },           // Q13 - MEDIUM
+    { amount: "100,000 Points", value: 100000 },         // Q14 - MEDIUM
+    { amount: "150,000 Points", value: 150000, checkpoint: true }, // Q15 - MEDIUM (Checkpoint)
+    { amount: "250,000 Points", value: 250000 },         // Q16 - HARD
+    { amount: "500,000 Points", value: 500000 },         // Q17 - HARD
+    { amount: "750,000 Points", value: 750000 },         // Q18 - HARD
+    { amount: "900,000 Points", value: 900000 },         // Q19 - HARD
+    { amount: "1,000,000 Points", value: 1000000 }       // Q20 - HARD (Grand Prize)
 ];
 
 // Determine difficulty based on current prize level (not question number)
@@ -1404,7 +1404,7 @@ async function showCertificate() {
         // --- Winner's Certificate Text ---
         certModalTitle.textContent = '🏆 Certificate of Excellence 🏆';
         certModalPresentedText.textContent = 'This is proudly awarded to';
-        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Watt\'s The Answer" challenge and collecting <strong>1,000,000 Reem Coins.</strong>';
+        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Watt\'s The Answer" challenge and collecting <strong>1,000,000 Points.</strong>';
         certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'none'; // Hide the old amount field
     } else {
@@ -1414,7 +1414,7 @@ async function showCertificate() {
         certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the "Watt\'s The Answer" challenge and collecting';
         certificateName.textContent = playerName; // Use stored player name
         certificateAmount.style.display = 'block'; // Ensure the old amount field is visible
-        certificateAmount.innerHTML = `<strong>${finalWinnings.value.toLocaleString()}</strong> Reem Coins.`;    }
+        certificateAmount.innerHTML = `<strong>${finalWinnings.value.toLocaleString()}</strong> Points.`;    }
 
     addToLeaderboardBtn.style.display = 'none';
     

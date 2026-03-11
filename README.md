@@ -4,9 +4,9 @@ An educational web-based trivia game about sustainability and renewable energy, 
 
 ## About the Game
 
-Players answer 20 questions to climb a prize ladder and earn virtual "Reem Coins." The game features:
+Players answer 20 questions to climb a prize ladder and earn virtual "Points." The game features:
 
-- **21-level prize ladder** (0 to 1,000,000 Reem Coins)
+- **21-level prize ladder** (0 to 1,000,000 Points)
 - **3 difficulty zones:** Easy, Medium, Hard
 - **3 lifelines:** Elimination, Add Time (+30s), Skip Question
 - **30-second timer** per question

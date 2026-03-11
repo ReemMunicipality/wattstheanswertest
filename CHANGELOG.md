@@ -1,7 +1,7 @@
 # Watt's The Answer - Development Changelog
 
 ## Game Overview
-**Watt's The Answer** (formerly "Mission Clean Energy") is an educational trivia game about sustainability and renewable energy where players answer questions to climb a prize ladder and earn Reem Coins.
+**Watt's The Answer** (formerly "Mission Clean Energy") is an educational trivia game about sustainability and renewable energy where players answer questions to climb a prize ladder and earn Points.
 
 ---
 
@@ -84,27 +84,27 @@
 ### New Prize Ladder (21 levels)
 | Level | Prize | Zone |
 |-------|-------|------|
-| 0 | 0 Reem Coins | EASY |
-| 1 | 100 Reem Coins | EASY |
-| 2 | 200 Reem Coins | EASY |
-| 3 | 500 Reem Coins | EASY |
-| 4 | 1,000 Reem Coins | EASY |
-| 5 | 2,000 Reem Coins | EASY |
-| 6 | 4,000 Reem Coins | EASY |
-| 7 | 6,000 Reem Coins | EASY |
-| 8 | 8,000 Reem Coins (Milestone) | MEDIUM |
-| 9 | 10,000 Reem Coins | MEDIUM |
-| 10 | 15,000 Reem Coins | MEDIUM |
-| 11 | 25,000 Reem Coins | MEDIUM |
-| 12 | 50,000 Reem Coins | MEDIUM |
-| 13 | 75,000 Reem Coins | MEDIUM |
-| 14 | 100,000 Reem Coins | MEDIUM |
-| 15 | 150,000 Reem Coins (Milestone) | HARD |
-| 16 | 250,000 Reem Coins | HARD |
-| 17 | 500,000 Reem Coins | HARD |
-| 18 | 750,000 Reem Coins | HARD |
-| 19 | 900,000 Reem Coins | HARD |
-| 20 | 1,000,000 Reem Coins | HARD |
+| 0 | 0 Points | EASY |
+| 1 | 100 Points | EASY |
+| 2 | 200 Points | EASY |
+| 3 | 500 Points | EASY |
+| 4 | 1,000 Points | EASY |
+| 5 | 2,000 Points | EASY |
+| 6 | 4,000 Points | EASY |
+| 7 | 6,000 Points | EASY |
+| 8 | 8,000 Points (Milestone) | MEDIUM |
+| 9 | 10,000 Points | MEDIUM |
+| 10 | 15,000 Points | MEDIUM |
+| 11 | 25,000 Points | MEDIUM |
+| 12 | 50,000 Points | MEDIUM |
+| 13 | 75,000 Points | MEDIUM |
+| 14 | 100,000 Points | MEDIUM |
+| 15 | 150,000 Points (Milestone) | HARD |
+| 16 | 250,000 Points | HARD |
+| 17 | 500,000 Points | HARD |
+| 18 | 750,000 Points | HARD |
+| 19 | 900,000 Points | HARD |
+| 20 | 1,000,000 Points | HARD |
 
 ### New Lifelines
 1. **Elimination** - Removes 1 wrong answer (changed from 2)
@@ -140,7 +140,7 @@
 
 ### Branding Changes
 - Game renamed from "Watt's the Answer?" to "Watt's The Answer"
-- Currency renamed from "RC" to "Reem Coins"
+- Currency renamed from "RC" to "Points"
 - Updated all certificates and help text
 
 ---

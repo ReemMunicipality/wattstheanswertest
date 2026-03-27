@@ -1016,9 +1016,7 @@ const validationMessage = document.getElementById('validationMessage');
 const certificateButtons = document.querySelector('.certificate-buttons');
 
 
-// Lifeline dropdown elements
-const lifelinesButton = document.querySelector('.lifelines-button');
-const lifelinesDropdown = document.getElementById('lifelinesDropdown');
+// Lifeline elements (no longer in a dropdown)
 
 // Sound toggle element
 const soundToggle = document.getElementById('soundToggle');
@@ -1331,7 +1329,6 @@ function useFiftyFifty() {
     playSound(clickSound);
     fiftyFiftyUsed = true;
     fiftyFiftyBtn.classList.add('used');
-    lifelinesDropdown.classList.remove('show'); // Close dropdown after use
 
     const options = document.querySelectorAll('.option');
     let wrongOptions = [];
@@ -1355,7 +1352,6 @@ function useAddTime() {
     playSound(clickSound);
     addTimeUsed = true;
     addTimeBtn.classList.add('used');
-    lifelinesDropdown.classList.remove('show'); // Close dropdown after use
 
     // Add 30 seconds to the current timer
     currentQuestionTimeLeft += 30;
@@ -1373,7 +1369,6 @@ function useSkipQuestion() {
     playSound(clickSound);
     skipQuestionUsed = true;
     skipQuestionBtn.classList.add('used');
-    lifelinesDropdown.classList.remove('show'); // Close dropdown after use
     stopQuestionTimer();
 
     // Skip to next question without affecting prize level
@@ -1759,19 +1754,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     addTimeBtn.addEventListener('click', useAddTime);
     skipQuestionBtn.addEventListener('click', useSkipQuestion);
     
-    lifelinesButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const isOpen = lifelinesDropdown.classList.toggle('show');
-        lifelinesButton.setAttribute('aria-expanded', isOpen.toString());
-    });
-
-    window.addEventListener('click', () => {
-        if (lifelinesDropdown.classList.contains('show')) {
-            lifelinesDropdown.classList.remove('show');
-            lifelinesButton.setAttribute('aria-expanded', 'false');
-        }
-    });
-
     // Keyboard navigation for answer selection
     document.addEventListener('keydown', (event) => {
         if (!gameActive) return;

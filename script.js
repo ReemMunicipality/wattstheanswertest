@@ -8,6 +8,95 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// --- Background video controller (intro / loop / outro from a single file) ---
+const videoController = (() => {
+    const LOOP_TAIL_SECONDS = 1; // last 1s of video becomes the ambient loop
+    const OUTRO_RATE = 30; // reverse playback framerate
+    const OUTRO_STEP = 1 / OUTRO_RATE;
+    let mode = 'intro'; // 'intro' | 'loop' | 'outro' | 'idle'
+    let outroRAF = null;
+    let lastOutroTick = 0;
+    let videoEl = null;
+
+    function getVideo() {
+        if (!videoEl) videoEl = document.getElementById('bgVideo');
+        return videoEl;
+    }
+
+    function onTimeUpdate() {
+        const v = getVideo();
+        if (!v) return;
+        if (mode === 'intro' && v.currentTime >= v.duration - 0.05) {
+            // Intro finished → switch to tail-loop
+            mode = 'loop';
+            v.currentTime = Math.max(0, v.duration - LOOP_TAIL_SECONDS);
+            v.play().catch(() => {});
+        } else if (mode === 'loop' && v.currentTime >= v.duration - 0.05) {
+            v.currentTime = Math.max(0, v.duration - LOOP_TAIL_SECONDS);
+            v.play().catch(() => {});
+        }
+    }
+
+    function outroStep(ts) {
+        const v = getVideo();
+        if (!v) return;
+        if (!lastOutroTick) lastOutroTick = ts;
+        const dt = (ts - lastOutroTick) / 1000;
+        if (dt >= OUTRO_STEP) {
+            v.currentTime = Math.max(0, v.currentTime - OUTRO_STEP);
+            lastOutroTick = ts;
+            if (v.currentTime <= 0.01) {
+                mode = 'idle';
+                v.pause();
+                return;
+            }
+        }
+        outroRAF = requestAnimationFrame(outroStep);
+    }
+
+    function playIntroThenLoop() {
+        const v = getVideo();
+        if (!v) return;
+        if (outroRAF) cancelAnimationFrame(outroRAF);
+        outroRAF = null;
+        lastOutroTick = 0;
+        mode = 'intro';
+        v.currentTime = 0;
+        v.play().catch(() => {});
+    }
+
+    function playOutro() {
+        const v = getVideo();
+        if (!v) return;
+        mode = 'outro';
+        v.pause();
+        // Start from the final frame and reverse to 0
+        v.currentTime = v.duration - 0.05;
+        lastOutroTick = 0;
+        if (outroRAF) cancelAnimationFrame(outroRAF);
+        outroRAF = requestAnimationFrame(outroStep);
+    }
+
+    function pauseForGameplay() {
+        const v = getVideo();
+        if (!v) return;
+        v.pause();
+        if (outroRAF) cancelAnimationFrame(outroRAF);
+        outroRAF = null;
+    }
+
+    // Bind timeupdate once DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const v = getVideo();
+        if (!v) return;
+        v.addEventListener('timeupdate', onTimeUpdate);
+        // Kick off intro explicitly (autoplay already does this, but ensures state)
+        v.play().catch(() => {});
+    });
+
+    return { playIntroThenLoop, playOutro, pauseForGameplay };
+})();
+
 // --- Utility Functions ---
 
 // Sanitize user input to prevent XSS attacks
@@ -755,8 +844,27 @@ function updateProgressBar() {
     }
 
     if (progressText) {
-        progressText.textContent = `Question ${currentQuestionIndex} / ${TOTAL_QUESTIONS}`;
+        progressText.textContent = `${currentQuestionIndex + 1}`;
     }
+
+    // Update 20-dot progress mask
+    const dots = document.getElementById('progressDots');
+    if (dots) {
+        dots.style.setProperty('--current', currentQuestionIndex + 1);
+    }
+
+    // Update 3-bar Points gauge based on prize-ladder progress
+    // Easy zone: levels 0-7 (8 steps), Medium: 8-14 (7), Hard: 15-20 (6)
+    const idx = currentMoneyIndex;
+    const easyPct = Math.max(0, Math.min(1, idx / 8)) * 100;
+    const medPct = Math.max(0, Math.min(1, (idx - 8) / 7)) * 100;
+    const hardPct = Math.max(0, Math.min(1, (idx - 15) / 6)) * 100;
+    const f1 = document.getElementById('pgFill1');
+    const f2 = document.getElementById('pgFill2');
+    const f3 = document.getElementById('pgFill3');
+    if (f1) f1.style.height = easyPct + '%';
+    if (f2) f2.style.height = medPct + '%';
+    if (f3) f3.style.height = hardPct + '%';
 }
 
 // Update visual difficulty indicators (background, level indicator)
@@ -1123,7 +1231,19 @@ function initGame() {
     resetGameState();
     initGameSession(); // Initialize cooldowns and reset used questions
     updateMoneyLadder();
-    showQuestion();
+
+    // Show lifeline explainer before first question, pause until acknowledged
+    const explainerModal = document.getElementById('lifelineExplainerModal');
+    const explainerOk = document.getElementById('lifelineExplainerOk');
+    explainerModal.classList.add('active');
+
+    // Wait for user to acknowledge
+    const onAck = () => {
+        explainerModal.classList.remove('active');
+        explainerOk.removeEventListener('click', onAck);
+        showQuestion();
+    };
+    explainerOk.addEventListener('click', onAck);
 }
 
 function stopQuestionTimer() {
@@ -1135,9 +1255,11 @@ function resumeQuestionTimer() {
     questionTimerInterval = setInterval(() => {
         currentQuestionTimeLeft--;
         if (questionTimerElement) {
-            questionTimerElement.textContent = currentQuestionTimeLeft;
+            const mm = String(Math.floor(currentQuestionTimeLeft / 60)).padStart(2, '0');
+            const ss = String(currentQuestionTimeLeft % 60).padStart(2, '0');
+            questionTimerElement.textContent = `${mm}:${ss}`;
             if (currentQuestionTimeLeft <= 10) {
-                questionTimerElement.style.background = '#FF0000';
+                questionTimerElement.classList.add('urgent');
             }
         }
         if (currentQuestionTimeLeft <= 0) handleTimeout();
@@ -1148,10 +1270,11 @@ function startQuestionTimer() {
     stopQuestionTimer();
     currentQuestionTimeLeft = QUESTION_TIME_LIMIT;
     if (questionTimerElement) {
-        questionTimerElement.textContent = currentQuestionTimeLeft;
+        const mm = String(Math.floor(currentQuestionTimeLeft / 60)).padStart(2, '0');
+        const ss = String(currentQuestionTimeLeft % 60).padStart(2, '0');
+        questionTimerElement.textContent = `${mm}:${ss}`;
         questionTimerElement.style.visibility = 'visible';
-        questionTimerElement.style.background = '#FFD700';
-        questionTimerElement.style.color = '#000';
+        questionTimerElement.classList.remove('urgent');
     }
     resumeQuestionTimer();
 }
@@ -1182,7 +1305,8 @@ function showQuestion() {
     const difficultyIcon = getDifficultyIcon(difficulty);
 
     questionElement.textContent = currentQuestion.question;
-    levelIndicator.textContent = `${difficultyIcon} ${difficulty} LEVEL`;
+    const stars = difficulty === 'EASY' ? '★' : difficulty === 'MEDIUM' ? '★★' : '★★★';
+    levelIndicator.textContent = stars;
 
     // Update all visual elements
     updateProgressBar();
@@ -1421,6 +1545,8 @@ async function showCertificate() {
     }
     
     certificateModal.classList.add('active');
+    document.body.classList.remove('in-game');
+    videoController.playOutro();
 }
 
 // Detect if user is on mobile device
@@ -1582,6 +1708,8 @@ function resetGameState() {
 function resetGame() {
     certificateModal.classList.remove('active');
     resetGameState();
+    document.body.classList.add('in-game');
+    videoController.pauseForGameplay();
     initGame();
 }
 
@@ -1590,6 +1718,8 @@ function endGame() {
     resetGameState();
     gameContainer.style.display = 'none';
     startScreen.classList.add('active');
+    document.body.classList.remove('in-game');
+    videoController.playIntroThenLoop();
 }
 
 // --- Event Listeners ---
@@ -1597,14 +1727,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     let nameInputMode = null; // Can be 'leaderboard' or 'certificate'
 
     // Load questions from Excel/CSV file
-    startGameBtn.textContent = 'Loading...';
     startGameBtn.disabled = true;
+    startGameBtn.classList.add('loading');
 
     await loadQuestionsFromFile();
 
     // Update button once questions are loaded
-    startGameBtn.textContent = 'Start Game';
     startGameBtn.disabled = false;
+    startGameBtn.classList.remove('loading');
 
     // Log question counts for debugging
     console.log('Questions loaded:', {
@@ -1665,6 +1795,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         startScreen.classList.remove('active');
         gameContainer.style.display = 'flex';
+        document.body.classList.add('in-game');
+        videoController.pauseForGameplay();
         initGame();
     });
 
@@ -1753,6 +1885,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     fiftyFiftyBtn.addEventListener('click', useFiftyFifty);
     addTimeBtn.addEventListener('click', useAddTime);
     skipQuestionBtn.addEventListener('click', useSkipQuestion);
+
+    // --- Lifeline Chooser (Idea 3) ---
+    const lifelineChooserModal = document.getElementById('lifelineChooserModal');
+    const lifelinesOpenBtn = document.getElementById('lifelinesOpenBtn');
+    const chooserCancel = document.getElementById('chooserCancel');
+    const chooserElimination = document.getElementById('chooserElimination');
+    const chooserAddTime = document.getElementById('chooserAddTime');
+    const chooserSkip = document.getElementById('chooserSkip');
+
+    function openLifelineChooser() {
+        if (!gameActive) return;
+        stopQuestionTimer(); // Freeze time
+        // Mark used lifelines
+        chooserElimination.classList.toggle('used-lifeline', fiftyFiftyUsed);
+        chooserAddTime.classList.toggle('used-lifeline', addTimeUsed);
+        chooserSkip.classList.toggle('used-lifeline', skipQuestionUsed);
+        lifelineChooserModal.classList.add('active');
+    }
+
+    function closeLifelineChooser() {
+        lifelineChooserModal.classList.remove('active');
+        if (gameActive) resumeQuestionTimer(); // Resume time
+    }
+
+    lifelinesOpenBtn.addEventListener('click', openLifelineChooser);
+    chooserCancel.addEventListener('click', closeLifelineChooser);
+    chooserElimination.addEventListener('click', () => {
+        closeLifelineChooser();
+        useFiftyFifty();
+    });
+    chooserAddTime.addEventListener('click', () => {
+        closeLifelineChooser();
+        useAddTime();
+    });
+    chooserSkip.addEventListener('click', () => {
+        closeLifelineChooser();
+        useSkipQuestion();
+    });
     
     // Keyboard navigation for answer selection
     document.addEventListener('keydown', (event) => {

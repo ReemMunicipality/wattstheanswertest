@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Trophy -->
+  <!-- Cup body -->
+  <path d="M35 22 H85 L78 68 C75 78 68 85 60 85 C52 85 45 78 42 68 Z" fill="#FFC107"/>
+  <path d="M40 22 H80 L74 65 C72 74 66 80 60 80 C54 80 48 74 46 65 Z" fill="#FFD54F"/>
+  <!-- Left handle -->
+  <path d="M35 30 C18 30 14 50 32 58" stroke="#FFC107" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Right handle -->
+  <path d="M85 30 C102 30 106 50 88 58" stroke="#FFC107" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Stem -->
+  <rect x="53" y="85" width="14" height="10" rx="2" fill="#FFA000"/>
+  <!-- Base -->
+  <rect x="42" y="95" width="36" height="8" rx="4" fill="#FFC107"/>
+  <rect x="45" y="95" width="30" height="5" rx="3" fill="#FFD54F"/>
+  <!-- Star -->
+  <polygon points="60,35 64,46 76,46 67,53 70,64 60,57 50,64 53,53 44,46 56,46" fill="#FF8F00"/>
+  <polygon points="60,38 63,47 73,47 65,53 68,62 60,56 52,62 55,53 47,47 57,47" fill="#FFA000"/>
+  <!-- Sparkles -->
+  <circle cx="22" cy="20" r="2.5" fill="#FFD54F"/>
+  <circle cx="98" cy="20" r="2.5" fill="#FFD54F"/>
+  <circle cx="15" cy="40" r="1.5" fill="#FFE082"/>
+  <circle cx="105" cy="40" r="1.5" fill="#FFE082"/>
+</svg>

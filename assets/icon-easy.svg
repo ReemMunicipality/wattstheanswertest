@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Green House -->
+  <!-- Roof -->
+  <polygon points="60,12 15,55 105,55" fill="#4CAF50"/>
+  <polygon points="60,18 22,55 98,55" fill="#66BB6A"/>
+  <!-- Chimney -->
+  <rect x="78" y="25" width="12" height="22" rx="2" fill="#795548"/>
+  <!-- Walls -->
+  <rect x="25" y="55" width="70" height="50" fill="#A5D6A7"/>
+  <rect x="28" y="55" width="64" height="47" fill="#C8E6C9"/>
+  <!-- Door -->
+  <rect x="48" y="70" width="24" height="35" rx="3" fill="#4CAF50"/>
+  <circle cx="66" cy="88" r="2.5" fill="#FFD54F"/>
+  <!-- Windows -->
+  <rect x="32" y="62" width="14" height="14" rx="2" fill="#E3F2FD"/>
+  <line x1="39" y1="62" x2="39" y2="76" stroke="#4CAF50" stroke-width="1.5"/>
+  <line x1="32" y1="69" x2="46" y2="69" stroke="#4CAF50" stroke-width="1.5"/>
+  <rect x="74" y="62" width="14" height="14" rx="2" fill="#E3F2FD"/>
+  <line x1="81" y1="62" x2="81" y2="76" stroke="#4CAF50" stroke-width="1.5"/>
+  <line x1="74" y1="69" x2="88" y2="69" stroke="#4CAF50" stroke-width="1.5"/>
+  <!-- Solar panel on roof -->
+  <rect x="38" y="30" width="20" height="14" rx="2" fill="#1565C0" transform="rotate(-22, 48, 37)"/>
+  <line x1="40" y1="33" x2="56" y2="27" stroke="#1976D2" stroke-width="0.8"/>
+  <line x1="41" y1="37" x2="57" y2="31" stroke="#1976D2" stroke-width="0.8"/>
+  <!-- Leaf/plant -->
+  <ellipse cx="18" cy="100" rx="6" ry="4" fill="#66BB6A" transform="rotate(-30, 18, 100)"/>
+  <ellipse cx="102" cy="100" rx="6" ry="4" fill="#66BB6A" transform="rotate(30, 102, 100)"/>
+</svg>

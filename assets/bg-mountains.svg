@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#cfe2ee"/>
+      <stop offset="35%" stop-color="#e9d5c3"/>
+      <stop offset="70%" stop-color="#e6b69b"/>
+      <stop offset="100%" stop-color="#c98f7a"/>
+    </linearGradient>
+    <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a98473"/>
+      <stop offset="100%" stop-color="#6b4a3e"/>
+    </linearGradient>
+    <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9a18b"/>
+      <stop offset="100%" stop-color="#7c5446"/>
+    </linearGradient>
+    <linearGradient id="m3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dfb89c"/>
+      <stop offset="100%" stop-color="#8d6450"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <!-- Far mountain layer -->
+  <path fill="url(#m3)" opacity="0.85" d="M0,720 L120,560 L240,640 L360,500 L520,600 L660,520 L820,610 L980,470 L1140,580 L1300,510 L1460,610 L1620,540 L1780,640 L1920,560 L1920,1080 L0,1080 Z"/>
+  <!-- Mid mountain layer -->
+  <path fill="url(#m2)" opacity="0.92" d="M0,820 L160,680 L300,760 L460,640 L620,740 L780,650 L940,760 L1100,640 L1260,740 L1420,660 L1580,760 L1740,680 L1920,780 L1920,1080 L0,1080 Z"/>
+  <!-- Near mountain layer -->
+  <path fill="url(#m1)" d="M0,900 L140,800 L280,860 L440,760 L600,850 L760,780 L920,870 L1080,790 L1240,880 L1400,800 L1560,880 L1720,810 L1920,890 L1920,1080 L0,1080 Z"/>
+</svg>

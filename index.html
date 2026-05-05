@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="assets/reem-logo.png" />
+  <link rel="stylesheet" href="style.css?v=redesign12" />
+  <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <!-- html2canvas for certificate image generation -->
@@ -15,28 +15,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+  <video class="bg-video" id="bgVideo" autoplay muted playsinline>
+    <source src="assets/bg-city.mp4" type="video/mp4">
+  </video>
+  <div class="top-toggles">
+    <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">Sound: ON</button>
+  </div>
   <div class="modal active" id="startScreen" role="dialog" aria-labelledby="startScreenTitle">
+    <div class="powered-by floating">
+      <span class="powered-by-text">Powered by</span>
+      <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" class="powered-by-logo">
+    </div>
     <div class="modal-content">
-      <div class="top-toggles">
-        <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">Sound: ON</button>
-      </div>
-
       <div class="game-titles">
-        <h1 class="game-main-title" id="startScreenTitle">Watt's The Answer</h1>
-         <div class="subtitle-logo-container">
-            <span class="subtitle-text">by</span>
-            <img src="assets/reem-logo.png" alt="RAK Municipality REEM Logo" class="start-screen-logo">
-        </div>
+        <h1 class="game-main-title" id="startScreenTitle">WATT'S THE ANSWER</h1>
       </div>
       <div class="player-name-input">
-        <label for="playerNameInput" class="player-name-label">Enter Your Name</label>
-        <input type="text" id="playerNameInput" class="name-input" placeholder="Your name here..." maxlength="30" aria-required="true" />
+        <input type="text" id="playerNameInput" class="name-input" placeholder="Your name..." maxlength="30" aria-required="true" />
         <small class="name-validation" id="nameValidation" style="display: none; color: #F44336;">Please enter your name to start</small>
       </div>
       <div class="start-buttons" role="group" aria-label="Game options">
-        <button class="modal-button" id="startGameBtn" aria-label="Start a new game">Start Game</button>
-        <button class="modal-button" id="leaderboardBtn" aria-label="View leaderboard">Leaderboard</button>
-        <button class="modal-button" id="helpBtn" aria-label="View game rules and information">More Info</button>
+        <button class="modal-button icon-btn" id="startGameBtn" aria-label="Start a new game" title="Start Game">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 8 L16 12 L10 16 Z"/></svg>
+        </button>
+        <button class="modal-button icon-btn" id="leaderboardBtn" aria-label="View leaderboard" title="Leaderboard">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 L13.5 6 L17.5 6 L14.2 8.5 L15.5 12.5 L12 10 L8.5 12.5 L9.8 8.5 L6.5 6 L10.5 6 Z"/><rect x="3" y="14" width="5" height="7" rx="0.5"/><rect x="9.5" y="11" width="5" height="10" rx="0.5"/><rect x="16" y="16" width="5" height="5" rx="0.5"/></svg>
+        </button>
+        <button class="modal-button icon-btn" id="helpBtn" aria-label="View game rules and information" title="More Info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="11" x2="12" y2="17"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -127,23 +134,21 @@
 
   <main class="container" id="gameContainer" role="main">
     <div class="game-area">
-      <button class="exit-button" id="exitButton" aria-label="Exit game and return to main menu">Exit Game</button>
-
-      <div class="game-logo-button">
-        <img src="assets/reem-logo.png" alt="Reem Logo" />
-      </div>
+      <button class="exit-button" id="exitButton" aria-label="Exit game and return to main menu" title="Exit">×</button>
 
       <div class="logo">
         <div class="game-titles">
-           <span class="game-main-title">Watt's The Answer</span>
+           <span class="game-main-title">WATT'S THE ANSWER</span>
         </div>
       </div>
 
-      <div class="progress-container">
-        <div class="progress-bar-wrapper">
-          <div class="progress-bar easy" id="progressBar" style="width: 0%"></div>
+      <div class="points-gauge" aria-label="Your Points">
+        <div class="points-gauge-label">Your Points</div>
+        <div class="points-gauge-bars">
+          <div class="pg-col"><div class="pg-icon">🏠</div><div class="pg-bar"><div class="pg-fill pg-fill-1" id="pgFill1"></div></div></div>
+          <div class="pg-col"><div class="pg-icon">☀</div><div class="pg-bar"><div class="pg-fill pg-fill-2" id="pgFill2"></div></div></div>
+          <div class="pg-col"><div class="pg-icon">🏙</div><div class="pg-bar"><div class="pg-fill pg-fill-3" id="pgFill3"></div></div></div>
         </div>
-        <div class="progress-text" id="progressText">Question 0 / 20</div>
       </div>
 
       <!-- Zone transition notification -->
@@ -152,22 +157,120 @@
         <span class="zone-text"></span>
       </div>
 
-      <div class="lifelines-container">
-            <button class="lifeline" id="fiftyFifty" aria-label="Use elimination lifeline">Elimination</button>
-            <button class="lifeline" id="addTime" aria-label="Add extra time to the timer">Add Time</button>
-            <button class="lifeline" id="skipQuestion" aria-label="Skip the current question">Skip</button>
-      </div>
-      <div class="question-timer lifeline" id="questionTimer" role="timer" aria-live="polite" aria-label="Time remaining">30</div>
-
       <div class="question-container" role="region" aria-label="Question area">
-        <div class="level-indicator" id="levelIndicator" aria-live="polite">EASY LEVEL</div>
+        <div class="qcard-top">
+          <div class="question-timer" id="questionTimer" role="timer" aria-live="polite" aria-label="Time remaining">00:30</div>
+          <div class="level-indicator" id="levelIndicator" aria-live="polite">★</div>
+        </div>
         <div class="question" id="question" aria-live="polite">Loading question...</div>
         <div class="options" id="options" role="group" aria-label="Answer options - use keys A, B, C, D or 1, 2, 3, 4 to select"></div>
+        <div class="qcard-bottom">
+          <div class="progress-container">
+            <div class="progress-dots-row">
+              <span class="progress-end-label" id="progressText">1</span>
+              <div class="progress-dots" id="progressDots"></div>
+              <span class="progress-end-label">20</span>
+            </div>
+          </div>
+          <div class="lifelines-block">
+          <div class="lifelines-container" aria-label="Your Lifelines">
+            <button class="lifeline" id="fiftyFifty" aria-label="Use elimination lifeline" data-tooltip="Elimination — removes one wrong answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 14 L9 17 L18 8"/><line x1="6" y1="8" x2="14" y2="8"/></svg>
+            </button>
+            <button class="lifeline" id="addTime" aria-label="Add extra time to the timer" data-tooltip="Add Time — adds 30 extra seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 15,15"/><line x1="9" y1="3" x2="15" y2="3"/></svg>
+            </button>
+            <button class="lifeline" id="skipQuestion" aria-label="Skip the current question" data-tooltip="Skip — skip to the next question">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 5 L13 12 L5 19 Z"/><rect x="15" y="5" width="3" height="14"/></svg>
+            </button>
+          </div>
+            <button class="lifelines-btn" id="lifelinesOpenBtn" aria-label="Open lifelines menu">Lifelines</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-logos">
+        <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" />
       </div>
     </div>
 
-    <aside class="money-ladder" id="moneyLadder" role="complementary" aria-label="Prize money ladder"></aside>
+    <aside class="money-ladder" id="moneyLadder" role="complementary" aria-label="Prize money ladder" hidden></aside>
   </main>
+
+  <!-- Pre-game lifeline explainer -->
+  <div class="modal" id="lifelineExplainerModal" role="dialog" aria-labelledby="lifelineExplainerTitle">
+    <div class="modal-content lifeline-explainer">
+      <h2 class="modal-title" id="lifelineExplainerTitle">Your Lifelines</h2>
+      <p class="explainer-subtitle">You get one of each per game. Use them wisely!</p>
+      <div class="explainer-items">
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 14 L9 17 L18 8"/><line x1="6" y1="8" x2="14" y2="8"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Elimination</strong>
+            <span>Removes one wrong answer</span>
+          </div>
+        </div>
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 15,15"/><line x1="9" y1="3" x2="15" y2="3"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Add Time</strong>
+            <span>Adds 30 extra seconds</span>
+          </div>
+        </div>
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5 L13 12 L5 19 Z"/><rect x="15" y="5" width="3" height="14"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Skip</strong>
+            <span>Skip to the next question</span>
+          </div>
+        </div>
+      </div>
+      <button class="modal-button" id="lifelineExplainerOk">Got it!</button>
+    </div>
+  </div>
+
+  <!-- In-game lifeline chooser popup -->
+  <div class="modal" id="lifelineChooserModal" role="dialog" aria-labelledby="lifelineChooserTitle">
+    <div class="modal-content lifeline-chooser">
+      <h2 class="modal-title" id="lifelineChooserTitle">Choose a Lifeline</h2>
+      <div class="chooser-items">
+        <button class="chooser-item" id="chooserElimination">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 14 L9 17 L18 8"/><line x1="6" y1="8" x2="14" y2="8"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Elimination</strong>
+            <span>Removes one wrong answer</span>
+          </div>
+        </button>
+        <button class="chooser-item" id="chooserAddTime">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 15,15"/><line x1="9" y1="3" x2="15" y2="3"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Add Time</strong>
+            <span>Adds 30 extra seconds</span>
+          </div>
+        </button>
+        <button class="chooser-item" id="chooserSkip">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5 L13 12 L5 19 Z"/><rect x="15" y="5" width="3" height="14"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Skip</strong>
+            <span>Skip to the next question</span>
+          </div>
+        </button>
+      </div>
+      <button class="modal-button chooser-cancel" id="chooserCancel">Cancel</button>
+    </div>
+  </div>
 
   <div class="modal" id="resultModal" role="dialog" aria-labelledby="resultTitle" aria-describedby="resultMessage">
     <div class="modal-content">
@@ -184,7 +287,7 @@
         <div class="certificate-content">
             <div class="certificate-header">
                 <div class="logo-container">
-                    <img src="assets/reem-logo.png" alt="RAK Municipality REEM Logo" class="certificate-logo">
+                    <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" class="certificate-logo">
                 </div>
             </div>
 
@@ -227,6 +330,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js"></script>
+  <script type="module" src="script.js?v=redesign12"></script>
 </body>
 </html>

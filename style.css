@@ -1168,3 +1168,794 @@ body {
     padding: 15px 30px;
   }
 }
+
+/* ============================================================
+   REDESIGN — Watt's the Answer (Concept V1, pages 6 & 8)
+   Mountain background, navy + gold, glassmorphic card.
+   ============================================================ */
+:root {
+  --rd-navy: #003366;
+  --rd-navy-deep: #002244;
+  --rd-grey: #505152;
+  --rd-gold: #E5BA4A;
+  --rd-gold-soft: #ecca6a;
+  --rd-glass: rgba(255, 255, 255, 0.55);
+  --rd-glass-strong: rgba(255, 255, 255, 0.72);
+  --rd-glass-border: rgba(255, 255, 255, 0.7);
+  --rd-shadow: 0 20px 60px rgba(8, 29, 54, 0.25);
+}
+
+body {
+  background: #f5efe6 !important;
+}
+
+/* Full-bleed looping video background */
+.bg-video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: -2;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+/* Hide video during gameplay, show mountain photo instead */
+body.in-game .bg-video { opacity: 0; pointer-events: none; }
+body.in-game {
+  background: #0d2a4a url('assets/bg-mountains.jpg') center/cover no-repeat fixed !important;
+}
+body.in-game::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.0) 40%, rgba(13,42,74,0.08) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+.container { position: relative; z-index: 1; }
+.modal { z-index: 100; }
+
+.question-timer.urgent {
+  background: #ffe1e1 !important;
+  border-color: #c92a2a !important;
+  color: #c92a2a !important;
+}
+
+/* ---------- Start screen (page 6) ---------- */
+#startScreen { background: rgba(10, 25, 45, 0.15) !important; backdrop-filter: none !important; flex-direction: column !important; }
+
+.powered-by.floating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  z-index: 2;
+}
+.powered-by.floating .powered-by-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--rd-navy);
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.6);
+}
+.powered-by.floating .powered-by-logo {
+  max-height: 50px;
+  width: auto;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,0.9))
+    drop-shadow(0 0 6px rgba(255,255,255,0.7))
+    drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+#startScreen .modal-content {
+  background: var(--rd-glass-strong) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--rd-glass-border);
+  border-radius: 24px !important;
+  box-shadow: var(--rd-shadow);
+  padding: 2.25rem 2.5rem !important;
+  max-width: 540px !important;
+}
+
+#startScreen .powered-by {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+#startScreen .powered-by-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--rd-navy);
+  letter-spacing: 0.5px;
+}
+#startScreen .powered-by-logo {
+  max-height: 46px;
+  width: auto;
+}
+
+#startScreen .game-titles { margin: 0.25rem 0 1.25rem 0; }
+#startScreen .game-main-title {
+  font-size: 2.2rem !important;
+  font-weight: 700;
+  color: var(--rd-navy) !important;
+  letter-spacing: 1px;
+  text-shadow: none !important;
+  text-align: center;
+}
+
+#startScreen .player-name-input { margin: 0 auto 1.25rem auto; max-width: 320px; }
+#startScreen .player-name-input .name-input {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid var(--rd-navy);
+  border-radius: 999px;
+  color: var(--rd-navy);
+  text-align: center;
+  font-weight: 500;
+  padding: 10px 18px;
+}
+#startScreen .player-name-input .name-input::placeholder { color: rgba(13, 42, 74, 0.55); }
+
+#startScreen .start-buttons { gap: 1.25rem; }
+
+/* Icon buttons (start screen + lifelines) */
+.modal-button.icon-btn {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 64px;
+  height: 50px;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+.modal-button.icon-btn { font-size: 0 !important; }
+.modal-button.icon-btn svg { width: 26px; height: 26px; font-size: 26px; }
+.modal-button.icon-btn:hover {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: translateY(-2px);
+}
+
+/* Sound toggle restyled */
+.sound-toggle {
+  background: var(--rd-glass-strong) !important;
+  color: var(--rd-navy) !important;
+  border: 1px solid var(--rd-glass-border) !important;
+  border-radius: 999px !important;
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+}
+
+/* ---------- Game area (page 8) ---------- */
+body.in-game, .container.in-game { background: transparent; }
+
+.game-area {
+  flex: 1 !important;
+  background: transparent !important;
+  padding: 2rem 3rem !important;
+  position: relative;
+}
+
+/* Hide vertical money ladder (replaced by 3-bar gauge) */
+.money-ladder { display: none !important; }
+
+/* Hide old game logo button */
+.game-logo-button { display: none !important; }
+
+/* Top-left X exit */
+.exit-button {
+  background: transparent !important;
+  color: var(--rd-gold) !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 2.4rem !important;
+  font-weight: 300 !important;
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  line-height: 1;
+  top: 22px !important;
+  left: 28px !important;
+}
+.exit-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-radius: 50%;
+}
+
+/* Centered title */
+.game-area .logo { margin-top: 0.5rem; }
+.game-area .game-titles { margin-bottom: 1rem; }
+.game-area .game-main-title {
+  font-size: 2rem !important;
+  color: var(--rd-navy) !important;
+  letter-spacing: 1px;
+  text-shadow: none !important;
+}
+
+/* Points gauge top-right (left of sound toggle) */
+.points-gauge {
+  position: fixed;
+  top: 22px;
+  right: 140px;
+  background: var(--rd-glass-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--rd-glass-border);
+  border-radius: 16px;
+  padding: 10px 16px 12px;
+  box-shadow: 0 6px 20px rgba(8, 29, 54, 0.15);
+  z-index: 10;
+}
+.points-gauge-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--rd-navy);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.points-gauge-bars {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.pg-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pg-icon {
+  font-size: 0.85rem;
+  color: var(--rd-navy);
+  line-height: 1;
+}
+.pg-bar {
+  width: 12px;
+  height: 42px;
+  background: rgba(13, 42, 74, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+.pg-fill {
+  width: 100%;
+  border-radius: 6px;
+  transition: height 0.4s ease;
+}
+.pg-fill-1 { background: var(--rd-navy); height: 0%; }
+.pg-fill-2 { background: #7bc47f; height: 0%; }
+.pg-fill-3 { background: var(--rd-gold); height: 0%; }
+
+/* Top-right sound toggle inside game stays where it is */
+.top-toggles { top: 22px !important; right: 28px !important; }
+
+/* Glass question card */
+.question-container {
+  background: var(--rd-glass) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--rd-glass-border) !important;
+  border-radius: 22px !important;
+  padding: 1.5rem 2rem 1.25rem !important;
+  margin: 1.25rem auto 1rem !important;
+  max-width: 1000px;
+  width: 100%;
+  flex-grow: 0 !important;
+  box-shadow: var(--rd-shadow);
+}
+
+.qcard-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+/* Timer pill */
+.question-timer {
+  position: static !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1.5px solid var(--rd-navy) !important;
+  border-radius: 999px !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 6px 18px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--rd-navy) !important;
+  margin: 0 !important;
+  display: inline-block;
+}
+
+/* Star level indicator */
+.level-indicator {
+  position: static !important;
+  background: transparent !important;
+  color: var(--rd-gold) !important;
+  font-size: 1.25rem !important;
+  padding: 0 !important;
+  animation: none !important;
+}
+.level-indicator.easy { background: transparent !important; color: var(--rd-gold) !important; }
+.level-indicator.medium { background: transparent !important; color: var(--rd-gold) !important; }
+.level-indicator.hard { background: transparent !important; color: var(--rd-gold) !important; }
+
+/* Question text */
+.question-container .question {
+  font-size: 1.25rem !important;
+  font-weight: 600;
+  color: var(--rd-navy);
+  text-align: center;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Options as pill rows in 2x2 */
+.options { gap: 0.75rem 1rem !important; }
+.option {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(13, 42, 74, 0.15) !important;
+  border-radius: 999px !important;
+  padding: 0.75rem 1rem !important;
+  color: var(--rd-navy) !important;
+  font-size: 0.95rem !important;
+}
+.option:hover {
+  background: var(--rd-gold-soft) !important;
+  border-color: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: none !important;
+}
+.option.selected, .option.correct, .option.wrong {
+  background: var(--rd-navy) !important;
+  color: #fff !important;
+  border-color: var(--rd-navy) !important;
+}
+.option-letter {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+}
+.option:hover .option-letter,
+.option.selected .option-letter,
+.option.correct .option-letter,
+.option.wrong .option-letter {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--rd-navy) !important;
+}
+
+/* Bottom row of card */
+.qcard-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+  gap: 1rem;
+}
+.qcard-bottom .progress-container { margin: 0; max-width: none; text-align: left; }
+.progress-dots-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress-end-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--rd-navy);
+  min-width: 14px;
+  text-align: center;
+}
+
+.lifelines-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.lifelines-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--rd-navy);
+  letter-spacing: 0.3px;
+}
+
+/* 20-dot progress (CSS-only, JS sets data-current) */
+.progress-dots {
+  --total: 20;
+  --current: 1;
+  width: 260px;
+  height: 14px;
+  background: linear-gradient(
+    to right,
+    var(--rd-navy) 0,
+    var(--rd-navy) calc(var(--current) / var(--total) * 100%),
+    rgba(13, 42, 74, 0.18) calc(var(--current) / var(--total) * 100%),
+    rgba(13, 42, 74, 0.18) 100%
+  );
+  border-radius: 999px;
+  -webkit-mask: radial-gradient(circle 4px at 7px 7px, #000 99%, transparent 100%) repeat-x;
+  mask: radial-gradient(circle 4px at 7px 7px, #000 99%, transparent 100%) repeat-x;
+  -webkit-mask-size: 13px 14px;
+  mask-size: 13px 14px;
+}
+
+/* Lifelines: small icon-only round buttons */
+.qcard-bottom .lifelines-container {
+  margin: 0 !important;
+  gap: 10px !important;
+}
+.lifeline {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  border: 2px solid var(--rd-gold) !important;
+  border-radius: 50% !important;
+  width: 42px !important;
+  height: 42px !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lifeline svg { width: 22px; height: 22px; }
+.lifeline:hover {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: scale(1.08);
+}
+.lifeline.used {
+  background: rgba(13, 42, 74, 0.25) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Footer logos */
+.footer-logos {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.85;
+}
+.footer-logos img {
+  max-height: 36px;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,0.9))
+    drop-shadow(0 0 6px rgba(255,255,255,0.7))
+    drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+}
+
+/* Hide subtitle-text "by" remnant if anywhere */
+.subtitle-logo-container { display: none; }
+
+/* Result modal styling tweak to fit theme */
+#resultModal .modal-content {
+  border-radius: 22px !important;
+  border: none;
+}
+#resultModal .modal-title { color: var(--rd-navy); }
+#resultModal .modal-button {
+  background: var(--rd-navy) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2) !important;
+}
+
+/* Theme all modal buttons to navy/gold */
+.modal-button {
+  background: var(--rd-navy) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2) !important;
+}
+.modal-button:hover, .modal-button:focus-visible {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.2) !important;
+}
+
+/* === Lifeline Explainer Modal === */
+.lifeline-explainer { max-width: 440px !important; }
+.explainer-subtitle {
+  font-size: 0.95rem;
+  color: var(--rd-grey);
+  margin-bottom: 1.5rem;
+}
+.explainer-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.explainer-item, .chooser-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0, 51, 102, 0.06);
+  border: 1px solid rgba(0, 51, 102, 0.12);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: left;
+  cursor: default;
+  width: 100%;
+}
+.chooser-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.chooser-item:hover {
+  background: var(--rd-gold-soft);
+  border-color: var(--rd-gold);
+  transform: translateY(-1px);
+}
+.chooser-item.used-lifeline {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.explainer-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  background: var(--rd-navy);
+  color: var(--rd-gold);
+  border: 2px solid var(--rd-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.explainer-icon svg { width: 22px; height: 22px; }
+.explainer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.explainer-text strong {
+  font-size: 0.95rem;
+  color: var(--rd-navy);
+}
+.explainer-text span {
+  font-size: 0.82rem;
+  color: var(--rd-grey);
+}
+
+/* === Lifeline Chooser Modal === */
+.lifeline-chooser { max-width: 440px !important; }
+.chooser-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+.chooser-cancel {
+  background: transparent !important;
+  color: var(--rd-navy) !important;
+  box-shadow: none !important;
+  border: 1.5px solid var(--rd-navy) !important;
+}
+.chooser-cancel:hover {
+  background: rgba(0, 51, 102, 0.08) !important;
+  color: var(--rd-navy) !important;
+}
+
+/* === Lifelines button (opens chooser) === */
+.lifelines-btn {
+  background: var(--rd-navy);
+  color: var(--rd-gold);
+  border: 1.5px solid var(--rd-gold);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+.lifelines-btn:hover {
+  background: var(--rd-gold);
+  color: var(--rd-navy);
+}
+
+/* === Hover tooltips on lifeline icons === */
+.lifeline[data-tooltip] {
+  position: relative;
+}
+.lifeline[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--rd-navy);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.lifeline[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--rd-navy);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
+.lifeline[data-tooltip]:hover::after,
+.lifeline[data-tooltip]:hover::before {
+  opacity: 1;
+}
+.lifeline.used[data-tooltip]:hover::after,
+.lifeline.used[data-tooltip]:hover::before {
+  opacity: 0;
+}
+
+/* Certificate title and amount in brand colors */
+#certificateModal .main-title { color: var(--rd-navy) !important; }
+#certificateModal .game-title { color: var(--rd-gold) !important; }
+#certificateModal .winning-amount { color: var(--rd-navy) !important; }
+
+/* ============================================================
+   MOBILE RESPONSIVE — Redesign overrides
+   ============================================================ */
+@media (max-width: 600px) {
+  /* --- Start screen --- */
+  .powered-by.floating {
+    margin-bottom: 12px;
+  }
+  .powered-by.floating .powered-by-logo {
+    max-height: 32px;
+    max-width: 260px;
+  }
+  .powered-by.floating .powered-by-text {
+    font-size: 0.65rem;
+  }
+
+  #startScreen .modal-content {
+    padding: 1.5rem 1.25rem !important;
+    max-width: 92% !important;
+  }
+  #startScreen .game-main-title {
+    font-size: 1.6rem !important;
+  }
+  #startScreen .player-name-input { max-width: 280px; }
+  #startScreen .start-buttons { gap: 0.75rem; }
+  .modal-button.icon-btn {
+    width: 56px;
+    height: 44px;
+  }
+  .modal-button.icon-btn svg { width: 22px; height: 22px; }
+
+  /* Sound toggle mobile */
+  .top-toggles {
+    top: 12px !important;
+    right: 12px !important;
+  }
+  .sound-toggle {
+    font-size: 0.7rem !important;
+    padding: 6px 10px !important;
+  }
+
+  /* --- In-game --- */
+  .game-area {
+    padding: 0.75rem 0.5rem !important;
+    padding-top: 55px !important;
+  }
+
+  .game-area .game-titles { margin-bottom: 0.5rem; }
+  .game-area .game-main-title {
+    font-size: 1.2rem !important;
+  }
+
+  /* Exit X */
+  .exit-button {
+    top: 10px !important;
+    left: 10px !important;
+    font-size: 1.8rem !important;
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Points gauge — smaller, below sound */
+  .points-gauge {
+    top: 10px !important;
+    right: 90px !important;
+    padding: 6px 10px 8px !important;
+    border-radius: 12px !important;
+  }
+  .points-gauge-label { font-size: 0.6rem; margin-bottom: 3px; }
+  .pg-icon { font-size: 0.65rem; }
+  .pg-bar { width: 8px; height: 30px; }
+  .points-gauge-bars { gap: 6px; }
+
+  /* Question card */
+  .question-container {
+    padding: 1rem 0.75rem 0.75rem !important;
+    margin: 0.5rem auto !important;
+    border-radius: 16px !important;
+  }
+
+  .qcard-top { margin-bottom: 0.75rem; }
+  .question-timer {
+    font-size: 0.85rem !important;
+    padding: 4px 12px !important;
+  }
+  .level-indicator { font-size: 1rem !important; }
+
+  .question-container .question {
+    font-size: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .option {
+    padding: 0.6rem 0.75rem !important;
+    font-size: 0.85rem !important;
+  }
+  .option-letter {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.75rem !important;
+    margin-right: 10px !important;
+  }
+
+  /* Bottom bar */
+  .qcard-bottom {
+    margin-top: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+  .progress-dots {
+    width: 140px;
+    height: 10px;
+    -webkit-mask-size: 8.5px 10px;
+    mask-size: 8.5px 10px;
+  }
+  .progress-end-label { font-size: 0.6rem; }
+
+  .lifelines-block { gap: 2px; }
+  .lifelines-label { font-size: 0.55rem; }
+  .qcard-bottom .lifelines-container { gap: 6px !important; }
+  .lifeline {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  .lifeline svg { width: 17px; height: 17px; }
+
+  /* Footer logos */
+  .footer-logos { bottom: 8px; }
+  .footer-logos img { max-height: 24px; }
+
+  /* Logo in game header — hide on mobile */
+  .game-area .logo { display: none; }
+}

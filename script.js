@@ -76,9 +76,18 @@ const videoController = (() => {
     function pauseForGameplay() {
         const v = getVideo();
         if (!v) return;
-        v.pause();
         if (outroRAF) cancelAnimationFrame(outroRAF);
         outroRAF = null;
+        mode = 'static';
+        const snapToEnd = () => {
+            v.currentTime = Math.max(0, v.duration - 0.05);
+            v.pause();
+        };
+        if (isFinite(v.duration) && v.duration > 0) {
+            snapToEnd();
+        } else {
+            v.addEventListener('loadedmetadata', snapToEnd, { once: true });
+        }
     }
 
     // Bind timeupdate once DOM is ready

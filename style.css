@@ -1202,11 +1202,7 @@ body {
   transition: opacity 0.6s ease;
 }
 
-/* Hide video during gameplay, show mountain photo instead */
-body.in-game .bg-video { opacity: 0; pointer-events: none; }
-body.in-game {
-  background: #0d2a4a url('assets/bg-mountains.jpg') center/cover no-repeat fixed !important;
-}
+/* Keep the frozen final video frame visible throughout gameplay */
 body.in-game::before {
   content: '';
   position: fixed;

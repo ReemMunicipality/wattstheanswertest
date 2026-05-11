@@ -10,10 +10,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Background video controller (intro / loop / outro from a single file) ---
 const videoController = (() => {
-    const LOOP_TAIL_SECONDS = 1; // last 1s of video becomes the ambient loop
     const OUTRO_RATE = 30; // reverse playback framerate
     const OUTRO_STEP = 1 / OUTRO_RATE;
-    let mode = 'intro'; // 'intro' | 'loop' | 'outro' | 'idle'
+    let mode = 'intro'; // 'intro' | 'static' | 'outro' | 'idle'
     let outroRAF = null;
     let lastOutroTick = 0;
     let videoEl = null;
@@ -27,13 +26,10 @@ const videoController = (() => {
         const v = getVideo();
         if (!v) return;
         if (mode === 'intro' && v.currentTime >= v.duration - 0.05) {
-            // Intro finished → switch to tail-loop
-            mode = 'loop';
-            v.currentTime = Math.max(0, v.duration - LOOP_TAIL_SECONDS);
-            v.play().catch(() => {});
-        } else if (mode === 'loop' && v.currentTime >= v.duration - 0.05) {
-            v.currentTime = Math.max(0, v.duration - LOOP_TAIL_SECONDS);
-            v.play().catch(() => {});
+            // Intro finished → hold the final frame as a static backdrop
+            mode = 'static';
+            v.currentTime = v.duration - 0.05;
+            v.pause();
         }
     }
 

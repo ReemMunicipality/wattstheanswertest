@@ -1192,15 +1192,12 @@ body {
 /* Full-bleed looping video background */
 .bg-video {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -2;
   object-fit: cover;
+  object-position: center;
   pointer-events: none;
   transition: opacity 0.6s ease;
 }

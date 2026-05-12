@@ -1335,8 +1335,10 @@ function showQuestion() {
     const difficultyIcon = getDifficultyIcon(difficulty);
 
     questionElement.textContent = currentQuestion.question;
-    const stars = difficulty === 'EASY' ? '★' : difficulty === 'MEDIUM' ? '★★' : '★★★';
-    levelIndicator.textContent = stars;
+    if (levelIndicator) {
+        const stars = difficulty === 'EASY' ? '★' : difficulty === 'MEDIUM' ? '★★' : '★★★';
+        levelIndicator.textContent = stars;
+    }
 
     // Update all visual elements
     updateProgressBar();

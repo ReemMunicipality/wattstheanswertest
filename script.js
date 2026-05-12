@@ -1262,18 +1262,30 @@ function initGame() {
     initGameSession(); // Initialize cooldowns and reset used questions
     updateMoneyLadder();
 
-    // Show lifeline explainer before first question, pause until acknowledged
-    const explainerModal = document.getElementById('lifelineExplainerModal');
-    const explainerOk = document.getElementById('lifelineExplainerOk');
-    explainerModal.classList.add('active');
+    // Show helpline explainer, then the level explainer, then the first question.
+    const helpModal = document.getElementById('lifelineExplainerModal');
+    const helpOk = document.getElementById('lifelineExplainerOk');
+    const levelModal = document.getElementById('levelExplainerModal');
+    const levelOk = document.getElementById('levelExplainerOk');
 
-    // Wait for user to acknowledge
-    const onAck = () => {
-        explainerModal.classList.remove('active');
-        explainerOk.removeEventListener('click', onAck);
-        showQuestion();
+    helpModal.classList.add('active');
+
+    const onHelpAck = () => {
+        helpModal.classList.remove('active');
+        helpOk.removeEventListener('click', onHelpAck);
+        if (levelModal && levelOk) {
+            levelModal.classList.add('active');
+            const onLevelAck = () => {
+                levelModal.classList.remove('active');
+                levelOk.removeEventListener('click', onLevelAck);
+                showQuestion();
+            };
+            levelOk.addEventListener('click', onLevelAck);
+        } else {
+            showQuestion();
+        }
     };
-    explainerOk.addEventListener('click', onAck);
+    helpOk.addEventListener('click', onHelpAck);
 }
 
 function stopQuestionTimer() {

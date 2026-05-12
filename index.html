@@ -102,8 +102,8 @@
       </div>
 
       <div class="help-section">
-          <h3>🆘 Lifelines</h3>
-          <p>You get one of each lifeline per game. Use them wisely!</p>
+          <h3>🆘 Helplines</h3>
+          <p>You get one of each helpline per game. Use them wisely!</p>
           <ul class="lifeline-list">
               <li><strong>Elimination:</strong> Removes one random incorrect answer to improve your odds.</li>
               <li><strong>Add Time:</strong> Adds an extra 30 seconds to the clock when you need more time to think.</li>
@@ -165,7 +165,7 @@
           <div class="question-timer" id="questionTimer" role="timer" aria-live="polite" aria-label="Time remaining">00:30</div>
           <div class="helplines-block">
             <div class="lifelines-container" aria-label="Your Helplines">
-              <button class="lifeline" id="fiftyFifty" aria-label="Use elimination lifeline" data-tooltip="Elimination — removes one wrong answer">
+              <button class="lifeline" id="fiftyFifty" aria-label="Use elimination helpline" data-tooltip="Elimination — removes one wrong answer">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6 V13" stroke-linecap="round"/><path d="M11 6 V13" stroke-linecap="round"/><path d="M14 8 V13" stroke-linecap="round"/><path d="M8 13 Q8 19 14 19 Q18 19 18 14 V11" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <button class="lifeline" id="addTime" aria-label="Add extra time to the timer" data-tooltip="Add Time — adds 30 extra seconds">
@@ -207,10 +207,10 @@
     <aside class="money-ladder" id="moneyLadder" role="complementary" aria-label="Prize money ladder" hidden></aside>
   </main>
 
-  <!-- Pre-game lifeline explainer -->
+  <!-- Pre-game helpline explainer -->
   <div class="modal" id="lifelineExplainerModal" role="dialog" aria-labelledby="lifelineExplainerTitle">
     <div class="modal-content lifeline-explainer">
-      <h2 class="modal-title" id="lifelineExplainerTitle">Your Lifelines</h2>
+      <h2 class="modal-title" id="lifelineExplainerTitle">Your Helplines</h2>
       <p class="explainer-subtitle">You get one of each per game. Use them wisely!</p>
       <div class="explainer-items">
         <div class="explainer-item">
@@ -245,10 +245,48 @@
     </div>
   </div>
 
-  <!-- In-game lifeline chooser popup -->
+  <!-- Pre-game level / difficulty explainer -->
+  <div class="modal" id="levelExplainerModal" role="dialog" aria-labelledby="levelExplainerTitle">
+    <div class="modal-content lifeline-explainer">
+      <h2 class="modal-title" id="levelExplainerTitle">Climbing the Ladder</h2>
+      <p class="explainer-subtitle">Each game has three difficulty zones. Climb the ladder to face tougher questions and bigger Points.</p>
+      <div class="explainer-items">
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 4 L28 14 V25 H4 V14 Z" stroke-linejoin="round"/><rect x="13" y="17" width="6" height="8"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Easy — Questions 1 to 8</strong>
+            <span>Build the basics. 100 to 8,000 Points.</span>
+          </div>
+        </div>
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="19"/><rect x="9" y="10" width="3" height="3"/><rect x="14.5" y="10" width="3" height="3"/><rect x="20" y="10" width="3" height="3"/><rect x="9" y="15" width="3" height="3"/><rect x="14.5" y="15" width="3" height="3"/><rect x="20" y="15" width="3" height="3"/><rect x="13" y="20" width="6" height="5"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Medium — Questions 9 to 15</strong>
+            <span>Step it up. 10,000 to 150,000 Points.</span>
+          </div>
+        </div>
+        <div class="explainer-item">
+          <div class="explainer-icon">
+            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="14" height="23"/><rect x="11.5" y="5" width="2" height="2"/><rect x="15" y="5" width="2" height="2"/><rect x="18.5" y="5" width="2" height="2"/><rect x="11.5" y="9" width="2" height="2"/><rect x="15" y="9" width="2" height="2"/><rect x="18.5" y="9" width="2" height="2"/><rect x="11.5" y="13" width="2" height="2"/><rect x="15" y="13" width="2" height="2"/><rect x="18.5" y="13" width="2" height="2"/><rect x="11.5" y="17" width="2" height="2"/><rect x="15" y="17" width="2" height="2"/><rect x="18.5" y="17" width="2" height="2"/></svg>
+          </div>
+          <div class="explainer-text">
+            <strong>Hard — Questions 16 to 20</strong>
+            <span>The big leagues. 250,000 to 1,000,000 Points.</span>
+          </div>
+        </div>
+      </div>
+      <button class="modal-button" id="levelExplainerOk">Got it!</button>
+    </div>
+  </div>
+
+  <!-- In-game helpline chooser popup -->
   <div class="modal" id="lifelineChooserModal" role="dialog" aria-labelledby="lifelineChooserTitle">
     <div class="modal-content lifeline-chooser">
-      <h2 class="modal-title" id="lifelineChooserTitle">Choose a Lifeline</h2>
+      <h2 class="modal-title" id="lifelineChooserTitle">Choose a Helpline</h2>
       <div class="chooser-items">
         <button class="chooser-item" id="chooserElimination">
           <div class="explainer-icon">

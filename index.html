@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=redesign14" />
+  <link rel="stylesheet" href="style.css?v=fc1" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -19,7 +19,18 @@
     <source src="assets/bg-city.mp4?v=hq1" type="video/mp4">
   </video>
   <div class="top-toggles">
-    <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">Sound: ON</button>
+    <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">
+      <svg class="sound-on" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 9.5 V14.5 H7.5 L13 19 V5 L7.5 9.5 Z"/>
+        <path d="M16 8 Q19 12 16 16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M18.5 6 Q22.5 12 18.5 18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      </svg>
+      <svg class="sound-off" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 9.5 V14.5 H7.5 L13 19 V5 L7.5 9.5 Z"/>
+        <line x1="16" y1="8" x2="22" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="22" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
   <div class="modal active" id="startScreen" role="dialog" aria-labelledby="startScreenTitle">
     <div class="powered-by floating">
@@ -35,14 +46,14 @@
         <small class="name-validation" id="nameValidation" style="display: none; color: #F44336;">Please enter your name to start</small>
       </div>
       <div class="start-buttons" role="group" aria-label="Game options">
-        <button class="modal-button icon-btn" id="startGameBtn" aria-label="Start a new game" title="Start Game">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 8 L16 12 L10 16 Z"/></svg>
+        <button class="modal-button icon-btn side-btn" id="leaderboardBtn" aria-label="View leaderboard" title="Leaderboard">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="14" width="4" height="6" rx="0.7"/><rect x="10" y="9" width="4" height="11" rx="0.7"/><rect x="16" y="11" width="4" height="9" rx="0.7"/><circle cx="6" cy="11" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="8" r="1.5"/></svg>
         </button>
-        <button class="modal-button icon-btn" id="leaderboardBtn" aria-label="View leaderboard" title="Leaderboard">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 L13.5 6 L17.5 6 L14.2 8.5 L15.5 12.5 L12 10 L8.5 12.5 L9.8 8.5 L6.5 6 L10.5 6 Z"/><rect x="3" y="14" width="5" height="7" rx="0.5"/><rect x="9.5" y="11" width="5" height="10" rx="0.5"/><rect x="16" y="16" width="5" height="5" rx="0.5"/></svg>
+        <button class="modal-button icon-btn play-btn-big" id="startGameBtn" aria-label="Start a new game" title="Start Game">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z"/></svg>
         </button>
-        <button class="modal-button icon-btn" id="helpBtn" aria-label="View game rules and information" title="More Info">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="11" x2="12" y2="17"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <button class="modal-button icon-btn side-btn" id="helpBtn" aria-label="View game rules and information" title="More Info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="17" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>
         </button>
       </div>
     </div>
@@ -142,14 +153,6 @@
         </div>
       </div>
 
-      <div class="points-gauge" aria-label="Your Points">
-        <div class="points-gauge-label">Your Points</div>
-        <div class="points-gauge-bars">
-          <div class="pg-col"><div class="pg-icon">🏠</div><div class="pg-bar"><div class="pg-fill pg-fill-1" id="pgFill1"></div></div></div>
-          <div class="pg-col"><div class="pg-icon">☀</div><div class="pg-bar"><div class="pg-fill pg-fill-2" id="pgFill2"></div></div></div>
-          <div class="pg-col"><div class="pg-icon">🏙</div><div class="pg-bar"><div class="pg-fill pg-fill-3" id="pgFill3"></div></div></div>
-        </div>
-      </div>
 
       <!-- Zone transition notification -->
       <div class="zone-notification" id="zoneNotification">
@@ -160,31 +163,38 @@
       <div class="question-container" role="region" aria-label="Question area">
         <div class="qcard-top">
           <div class="question-timer" id="questionTimer" role="timer" aria-live="polite" aria-label="Time remaining">00:30</div>
-          <div class="level-indicator" id="levelIndicator" aria-live="polite">★</div>
+          <div class="helplines-block">
+            <div class="lifelines-container" aria-label="Your Helplines">
+              <button class="lifeline" id="fiftyFifty" aria-label="Use elimination lifeline" data-tooltip="Elimination — removes one wrong answer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6 V13" stroke-linecap="round"/><path d="M11 6 V13" stroke-linecap="round"/><path d="M14 8 V13" stroke-linecap="round"/><path d="M8 13 Q8 19 14 19 Q18 19 18 14 V11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="lifeline" id="addTime" aria-label="Add extra time to the timer" data-tooltip="Add Time — adds 30 extra seconds">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="13" r="7"/><polyline points="11,9 11,13 14,15"/><line x1="18" y1="6" x2="22" y2="6" stroke-linecap="round"/><line x1="20" y1="4" x2="20" y2="8" stroke-linecap="round"/></svg>
+              </button>
+              <button class="lifeline" id="skipQuestion" aria-label="Skip the current question" data-tooltip="Skip — skip to the next question">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 6 L13 12 L5 18 Z"/><path d="M13 6 L21 12 L13 18 Z"/></svg>
+              </button>
+            </div>
+            <span class="helplines-label">HELPLINES</span>
+          </div>
+          <div class="points-pill" id="pointsPill" aria-live="polite">0 Points</div>
         </div>
         <div class="question" id="question" aria-live="polite">Loading question...</div>
         <div class="options" id="options" role="group" aria-label="Answer options - use keys A, B, C, D or 1, 2, 3, 4 to select"></div>
         <div class="qcard-bottom">
-          <div class="progress-container">
-            <div class="progress-dots-row">
-              <span class="progress-end-label" id="progressText">1</span>
-              <div class="progress-dots" id="progressDots"></div>
-              <span class="progress-end-label">20</span>
+          <div class="level-row" id="levelRow" aria-label="Progress through difficulty zones">
+            <div class="level-zone level-zone-easy" data-zone="easy">
+              <svg class="level-icon" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 4 L28 14 V25 H4 V14 Z" stroke-linejoin="round"/><rect x="13" y="17" width="6" height="8"/></svg>
+              <div class="level-dots" id="levelDotsEasy"></div>
             </div>
-          </div>
-          <div class="lifelines-block">
-          <div class="lifelines-container" aria-label="Your Lifelines">
-            <button class="lifeline" id="fiftyFifty" aria-label="Use elimination lifeline" data-tooltip="Elimination — removes one wrong answer">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 14 L9 17 L18 8"/><line x1="6" y1="8" x2="14" y2="8"/></svg>
-            </button>
-            <button class="lifeline" id="addTime" aria-label="Add extra time to the timer" data-tooltip="Add Time — adds 30 extra seconds">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 15,15"/><line x1="9" y1="3" x2="15" y2="3"/></svg>
-            </button>
-            <button class="lifeline" id="skipQuestion" aria-label="Skip the current question" data-tooltip="Skip — skip to the next question">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 5 L13 12 L5 19 Z"/><rect x="15" y="5" width="3" height="14"/></svg>
-            </button>
-          </div>
-            <button class="lifelines-btn" id="lifelinesOpenBtn" aria-label="Open lifelines menu">Lifelines</button>
+            <div class="level-zone level-zone-medium" data-zone="medium">
+              <svg class="level-icon" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="6" y="6" width="20" height="19"/><rect x="9" y="10" width="3" height="3"/><rect x="14.5" y="10" width="3" height="3"/><rect x="20" y="10" width="3" height="3"/><rect x="9" y="15" width="3" height="3"/><rect x="14.5" y="15" width="3" height="3"/><rect x="20" y="15" width="3" height="3"/><rect x="13" y="20" width="6" height="5"/></svg>
+              <div class="level-dots" id="levelDotsMedium"></div>
+            </div>
+            <div class="level-zone level-zone-hard" data-zone="hard">
+              <svg class="level-icon" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="2" width="14" height="23"/><rect x="11.5" y="5" width="2" height="2"/><rect x="15" y="5" width="2" height="2"/><rect x="18.5" y="5" width="2" height="2"/><rect x="11.5" y="9" width="2" height="2"/><rect x="15" y="9" width="2" height="2"/><rect x="18.5" y="9" width="2" height="2"/><rect x="11.5" y="13" width="2" height="2"/><rect x="15" y="13" width="2" height="2"/><rect x="18.5" y="13" width="2" height="2"/><rect x="11.5" y="17" width="2" height="2"/><rect x="15" y="17" width="2" height="2"/><rect x="18.5" y="17" width="2" height="2"/></svg>
+              <div class="level-dots" id="levelDotsHard"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -330,6 +340,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=redesign14"></script>
+  <script type="module" src="script.js?v=fc1"></script>
 </body>
 </html>

@@ -1952,3 +1952,250 @@ body.in-game, .container.in-game { background: transparent; }
   /* Logo in game header — hide on mobile */
   .game-area .logo { display: none; }
 }
+
+/* =========================================================================
+   FINAL CONCEPT — start screen, in-game card, helplines, level row, sound
+   ========================================================================= */
+
+/* --- Start screen: big circular gold Play between two small navy buttons --- */
+#startScreen .start-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.modal-button.icon-btn.side-btn {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 14px !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.22) !important;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.modal-button.icon-btn.side-btn svg { width: 30px; height: 30px; }
+.modal-button.icon-btn.side-btn:hover,
+.modal-button.icon-btn.side-btn:focus-visible {
+  background: #1e4a7a !important;
+  color: var(--rd-gold-soft) !important;
+  transform: translateY(-2px);
+}
+.modal-button.icon-btn.side-btn:active {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: translateY(1px);
+}
+
+.modal-button.icon-btn.play-btn-big {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  width: 108px !important;
+  height: 108px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.22), 0 0 0 6px rgba(229,186,74,0.18) !important;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.modal-button.icon-btn.play-btn-big svg {
+  width: 52px;
+  height: 52px;
+  /* nudge the triangle so the optical center matches the circle */
+  transform: translateX(3px);
+}
+.modal-button.icon-btn.play-btn-big:hover,
+.modal-button.icon-btn.play-btn-big:focus-visible {
+  background: var(--rd-gold-soft) !important;
+  transform: translateY(-3px);
+}
+.modal-button.icon-btn.play-btn-big:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.22), 0 0 0 4px rgba(229,186,74,0.18) !important;
+}
+
+/* --- Sound toggle: icon-only speaker --- */
+.top-toggles .sound-toggle {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 6px !important;
+  width: auto !important;
+  height: auto !important;
+  color: var(--rd-navy) !important;
+  font-size: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.top-toggles .sound-toggle svg { width: 30px; height: 30px; }
+.top-toggles .sound-toggle .sound-off { display: none; }
+.top-toggles .sound-toggle.muted .sound-on { display: none; }
+.top-toggles .sound-toggle.muted .sound-off { display: inline-block; color: var(--rd-grey) !important; }
+.top-toggles .sound-toggle:hover { color: var(--rd-gold) !important; transform: scale(1.08); }
+
+/* --- In-game question card: 3-column top row --- */
+.question-container .qcard-top {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 4px 12px !important;
+  border-bottom: none !important;
+}
+.question-container .qcard-top .question-timer {
+  justify-self: start;
+  background: transparent !important;
+  border: none !important;
+  color: var(--rd-navy) !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+  letter-spacing: 0.5px;
+}
+.question-timer.urgent { color: #c92a2a !important; }
+.question-timer.warning { color: #e08a1e !important; }
+
+/* Helplines cluster in the center */
+.helplines-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  justify-self: center;
+}
+.helplines-block .lifelines-container {
+  display: inline-flex;
+  gap: 8px;
+  margin: 0 !important;
+}
+.helplines-block .helplines-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--rd-navy);
+  text-transform: uppercase;
+}
+/* Smaller helpline icons matching the concept */
+.helplines-block .lifeline {
+  width: 30px !important;
+  height: 30px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--rd-gold) !important;
+}
+.helplines-block .lifeline:hover {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: scale(1.1);
+}
+.helplines-block .lifeline svg { width: 18px; height: 18px; }
+.helplines-block .lifeline.used {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  border: none !important;
+  opacity: 1 !important;
+}
+/* Highlight the middle helpline like the PDF */
+.helplines-block .lifeline:nth-child(2) {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  border-radius: 50% !important;
+}
+.helplines-block .lifeline:nth-child(2):hover {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+}
+
+/* Points pill — top right of card */
+.points-pill {
+  justify-self: end;
+  background: #fff;
+  border: 1.5px solid rgba(13, 42, 74, 0.18);
+  color: var(--rd-gold);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.points-pill.earned {
+  background: var(--rd-navy);
+  border-color: var(--rd-navy);
+  color: var(--rd-gold);
+}
+
+/* --- Bottom: 3-zone level row --- */
+.qcard-bottom {
+  display: block !important;
+  padding-top: 6px;
+}
+.level-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+  align-items: end;
+  justify-items: center;
+  padding: 8px 4px 0;
+}
+.level-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+.level-zone.active,
+.level-zone.completed { opacity: 1; }
+.level-zone .level-icon { width: 36px; height: 32px; color: var(--rd-navy); }
+.level-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.level-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(13, 42, 74, 0.18);
+  display: inline-block;
+}
+.level-zone-easy .level-dots span.filled { background: #4caf7a; }
+.level-zone-medium .level-dots span.filled { background: #e5ba4a; }
+.level-zone-hard .level-dots span.filled { background: #2f7bd6; }
+
+/* Hide legacy points gauge if any straggler nodes remain */
+.points-gauge { display: none !important; }
+.progress-dots-row { display: none !important; }
+
+/* --- Mobile tweaks for the new layout --- */
+@media (max-width: 600px) {
+  .modal-button.icon-btn.play-btn-big {
+    width: 84px !important;
+    height: 84px !important;
+  }
+  .modal-button.icon-btn.play-btn-big svg { width: 40px; height: 40px; }
+  .modal-button.icon-btn.side-btn {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 12px !important;
+  }
+  .modal-button.icon-btn.side-btn svg { width: 24px; height: 24px; }
+  #startScreen .start-buttons { gap: 1rem; }
+
+  .top-toggles .sound-toggle svg { width: 26px; height: 26px; }
+
+  .question-container .qcard-top { grid-template-columns: auto auto auto; gap: 6px; }
+  .points-pill { font-size: 0.75rem; padding: 5px 10px; }
+  .helplines-block .lifeline { width: 26px !important; height: 26px !important; }
+  .helplines-block .lifeline svg { width: 14px; height: 14px; }
+  .helplines-block .helplines-label { font-size: 0.55rem; letter-spacing: 1px; }
+
+  .level-row { gap: 0.6rem; }
+  .level-zone .level-icon { width: 28px; height: 24px; }
+  .level-dots span { width: 5px; height: 5px; }
+}

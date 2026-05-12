@@ -852,24 +852,49 @@ function updateProgressBar() {
         progressText.textContent = `${currentQuestionIndex + 1}`;
     }
 
-    // Update 20-dot progress mask
+    // Update 20-dot progress mask (legacy element — may be absent)
     const dots = document.getElementById('progressDots');
     if (dots) {
         dots.style.setProperty('--current', currentQuestionIndex + 1);
     }
 
-    // Update 3-bar Points gauge based on prize-ladder progress
-    // Easy zone: levels 0-7 (8 steps), Medium: 8-14 (7), Hard: 15-20 (6)
+    // Update the in-card Points pill from the prize ladder
     const idx = currentMoneyIndex;
-    const easyPct = Math.max(0, Math.min(1, idx / 8)) * 100;
-    const medPct = Math.max(0, Math.min(1, (idx - 8) / 7)) * 100;
-    const hardPct = Math.max(0, Math.min(1, (idx - 15) / 6)) * 100;
-    const f1 = document.getElementById('pgFill1');
-    const f2 = document.getElementById('pgFill2');
-    const f3 = document.getElementById('pgFill3');
-    if (f1) f1.style.height = easyPct + '%';
-    if (f2) f2.style.height = medPct + '%';
-    if (f3) f3.style.height = hardPct + '%';
+    const pointsPill = document.getElementById('pointsPill');
+    if (pointsPill && moneyLadder[idx]) {
+        pointsPill.textContent = moneyLadder[idx].amount;
+        pointsPill.classList.toggle('earned', moneyLadder[idx].value > 0);
+    }
+
+    // Update the 3-zone level row (8 easy + 7 medium + 6 hard dots)
+    updateLevelRow(idx);
+}
+
+function updateLevelRow(idx) {
+    const zones = [
+        { id: 'levelDotsEasy', total: 8, startIdx: 1, zoneEl: '.level-zone-easy' },
+        { id: 'levelDotsMedium', total: 7, startIdx: 9, zoneEl: '.level-zone-medium' },
+        { id: 'levelDotsHard', total: 5, startIdx: 16, zoneEl: '.level-zone-hard' },
+    ];
+    zones.forEach(zone => {
+        const dotsEl = document.getElementById(zone.id);
+        if (!dotsEl) return;
+        if (dotsEl.children.length !== zone.total) {
+            dotsEl.innerHTML = '';
+            for (let i = 0; i < zone.total; i++) {
+                dotsEl.appendChild(document.createElement('span'));
+            }
+        }
+        const completedInZone = Math.max(0, Math.min(zone.total, idx - zone.startIdx + 1));
+        Array.from(dotsEl.children).forEach((dot, i) => {
+            dot.classList.toggle('filled', i < completedInZone);
+        });
+        const zoneEl = document.querySelector(zone.zoneEl);
+        if (zoneEl) {
+            zoneEl.classList.toggle('active', completedInZone > 0 && completedInZone < zone.total);
+            zoneEl.classList.toggle('completed', completedInZone >= zone.total);
+        }
+    });
 }
 
 // Update visual difficulty indicators (background, level indicator)
@@ -1759,18 +1784,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Sound toggle functionality
+    // Sound toggle functionality — keeps two stacked SVG icons in the button
+    // (.sound-on / .sound-off) and switches between them via the .muted class.
     soundToggle.addEventListener('click', () => {
         isMuted = !isMuted;
-        if (isMuted) {
-            soundToggle.textContent = 'Sound: OFF';
-            soundToggle.classList.add('muted');
-            soundToggle.setAttribute('aria-pressed', 'true');
-        } else {
-            soundToggle.textContent = 'Sound: ON';
-            soundToggle.classList.remove('muted');
-            soundToggle.setAttribute('aria-pressed', 'false');
-        }
+        soundToggle.classList.toggle('muted', isMuted);
+        soundToggle.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
+        soundToggle.setAttribute('aria-label', isMuted ? 'Sound is off' : 'Sound is on');
     });
 
     helpBtn.addEventListener('click', () => {
@@ -1914,7 +1934,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (gameActive) resumeQuestionTimer(); // Resume time
     }
 
-    lifelinesOpenBtn.addEventListener('click', openLifelineChooser);
+    // The standalone "Lifelines" button was removed in the final-concept layout
+    // (helplines are now inline at the top of the question card). Keep the
+    // chooser modal logic intact in case we re-enable it later, but only
+    // wire the trigger if the button is still present.
+    if (lifelinesOpenBtn) lifelinesOpenBtn.addEventListener('click', openLifelineChooser);
     chooserCancel.addEventListener('click', closeLifelineChooser);
     chooserElimination.addEventListener('click', () => {
         closeLifelineChooser();

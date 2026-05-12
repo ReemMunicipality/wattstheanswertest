@@ -1989,30 +1989,27 @@ body.in-game, .container.in-game { background: transparent; }
 }
 
 .modal-button.icon-btn.play-btn-big {
-  background: var(--rd-gold) !important;
-  color: var(--rd-navy) !important;
-  width: 108px !important;
-  height: 108px !important;
-  border-radius: 50% !important;
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 96px !important;
+  height: 80px !important;
+  border-radius: 14px !important;
   padding: 0 !important;
   border: none !important;
-  box-shadow: 0 5px 0 rgba(0,0,0,0.22), 0 0 0 6px rgba(229,186,74,0.18) !important;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.22) !important;
   transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
-.modal-button.icon-btn.play-btn-big svg {
-  width: 52px;
-  height: 52px;
-  /* nudge the triangle so the optical center matches the circle */
-  transform: translateX(3px);
-}
+.modal-button.icon-btn.play-btn-big svg { width: 46px; height: 46px; }
 .modal-button.icon-btn.play-btn-big:hover,
 .modal-button.icon-btn.play-btn-big:focus-visible {
-  background: var(--rd-gold-soft) !important;
+  background: #1e4a7a !important;
+  color: var(--rd-gold-soft) !important;
   transform: translateY(-3px);
 }
 .modal-button.icon-btn.play-btn-big:active {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
   transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(0,0,0,0.22), 0 0 0 4px rgba(229,186,74,0.18) !important;
 }
 
 /* --- Sound toggle: icon-only speaker --- */
@@ -2175,10 +2172,11 @@ body.in-game, .container.in-game { background: transparent; }
 /* --- Mobile tweaks for the new layout --- */
 @media (max-width: 600px) {
   .modal-button.icon-btn.play-btn-big {
-    width: 84px !important;
-    height: 84px !important;
+    width: 78px !important;
+    height: 64px !important;
+    border-radius: 12px !important;
   }
-  .modal-button.icon-btn.play-btn-big svg { width: 40px; height: 40px; }
+  .modal-button.icon-btn.play-btn-big svg { width: 36px; height: 36px; }
   .modal-button.icon-btn.side-btn {
     width: 52px !important;
     height: 52px !important;

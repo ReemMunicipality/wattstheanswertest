@@ -893,6 +893,8 @@ function updateLevelRow(idx) {
         if (zoneEl) {
             zoneEl.classList.toggle('active', completedInZone > 0 && completedInZone < zone.total);
             zoneEl.classList.toggle('completed', completedInZone >= zone.total);
+            const fillFraction = zone.total > 0 ? completedInZone / zone.total : 0;
+            zoneEl.style.setProperty('--fill', fillFraction);
         }
     });
 }

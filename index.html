@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc1" />
+  <link rel="stylesheet" href="style.css?v=fc12" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -15,7 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <video class="bg-video" id="bgVideo" autoplay muted playsinline>
+  <video class="bg-video" id="bgVideo" autoplay muted playsinline preload="auto">
     <source src="assets/bg-city.mp4?v=hq1" type="video/mp4">
   </video>
   <div class="top-toggles">
@@ -47,13 +47,13 @@
       </div>
       <div class="start-buttons" role="group" aria-label="Game options">
         <button class="modal-button icon-btn side-btn" id="leaderboardBtn" aria-label="View leaderboard" title="Leaderboard">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="14" width="4" height="6" rx="0.7"/><rect x="10" y="9" width="4" height="11" rx="0.7"/><rect x="16" y="11" width="4" height="9" rx="0.7"/><circle cx="6" cy="11" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="8" r="1.5"/></svg>
+          <img src="assets/icons/leaderboard.svg" alt="" class="btn-icon" />
         </button>
         <button class="modal-button icon-btn play-btn-big" id="startGameBtn" aria-label="Start a new game" title="Start Game">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 8 L16 12 L10 16 Z"/></svg>
+          <img src="assets/icons/play.svg" alt="" class="btn-icon" />
         </button>
         <button class="modal-button icon-btn side-btn" id="helpBtn" aria-label="View game rules and information" title="More Info">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="17" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+          <img src="assets/icons/more-info.svg" alt="" class="btn-icon" />
         </button>
       </div>
     </div>
@@ -76,7 +76,9 @@
           </tbody>
         </table>
       </div>
-      <button class="modal-button" id="backToStartBtn" aria-label="Return to main menu">Back</button>
+      <button class="modal-button skip-back-btn" id="backToStartBtn" aria-label="Return to main menu" title="Back">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+      </button>
     </div>
   </div>
 
@@ -139,7 +141,9 @@
 </div>
     </div>
     
-    <button class="modal-button" id="backToStartFromHelpBtn" aria-label="Return to main menu">Back</button>
+    <button class="modal-button skip-back-btn" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+    </button>
   </div>
 </div>
 
@@ -172,37 +176,40 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="13" r="7"/><polyline points="11,9 11,13 14,15"/><line x1="18" y1="6" x2="22" y2="6" stroke-linecap="round"/><line x1="20" y1="4" x2="20" y2="8" stroke-linecap="round"/></svg>
               </button>
               <button class="lifeline" id="skipQuestion" aria-label="Skip the current question" data-tooltip="Skip — skip to the next question">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 6 L13 12 L5 18 Z"/><path d="M13 6 L21 12 L13 18 Z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 6.5 L17.5 12 L9 17.5 Z"/></svg>
               </button>
             </div>
             <span class="helplines-label">HELPLINES</span>
           </div>
-          <div class="points-pill" id="pointsPill" aria-live="polite">0 Points</div>
+          <div class="points-and-progress">
+            <div class="points-pill" id="pointsPill" aria-live="polite">0 Points</div>
+            <div class="questions-counter" id="questionsCounter" aria-live="polite">1 / 20</div>
+          </div>
         </div>
         <div class="question" id="question" aria-live="polite">Loading question...</div>
         <div class="options" id="options" role="group" aria-label="Answer options - use keys A, B, C, D or 1, 2, 3, 4 to select"></div>
         <div class="qcard-bottom">
           <div class="level-row" id="levelRow" aria-label="Progress through difficulty zones">
             <div class="level-zone level-zone-easy" data-zone="easy">
-              <div class="level-icon-wrap">
-                <svg class="level-icon level-icon-outline" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 4 L28 14 V25 H4 V14 Z" stroke-linejoin="round"/><rect x="13" y="17" width="6" height="8"/></svg>
-                <svg class="level-icon level-icon-fill" viewBox="0 0 32 28" fill="currentColor" aria-hidden="true"><path d="M16 4 L28 14 V25 H4 V14 Z"/></svg>
+              <div class="level-bar-wrap">
+                <img class="level-bar level-bar-outline" src="assets/icons/level-easy.svg" alt="" />
+                <img class="level-bar level-bar-fill" src="assets/icons/level-easy.svg" alt="" />
               </div>
-              <div class="level-dots" id="levelDotsEasy"></div>
+              <div class="level-dots" id="levelDotsEasy" hidden></div>
             </div>
             <div class="level-zone level-zone-medium" data-zone="medium">
-              <div class="level-icon-wrap">
-                <svg class="level-icon level-icon-outline" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="6" y="6" width="20" height="19"/><rect x="9" y="10" width="3" height="3"/><rect x="14.5" y="10" width="3" height="3"/><rect x="20" y="10" width="3" height="3"/><rect x="9" y="15" width="3" height="3"/><rect x="14.5" y="15" width="3" height="3"/><rect x="20" y="15" width="3" height="3"/><rect x="13" y="20" width="6" height="5"/></svg>
-                <svg class="level-icon level-icon-fill" viewBox="0 0 32 28" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="20" height="19"/></svg>
+              <div class="level-bar-wrap">
+                <img class="level-bar level-bar-outline" src="assets/icons/level-medium.svg" alt="" />
+                <img class="level-bar level-bar-fill" src="assets/icons/level-medium.svg" alt="" />
               </div>
-              <div class="level-dots" id="levelDotsMedium"></div>
+              <div class="level-dots" id="levelDotsMedium" hidden></div>
             </div>
             <div class="level-zone level-zone-hard" data-zone="hard">
-              <div class="level-icon-wrap">
-                <svg class="level-icon level-icon-outline" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="2" width="14" height="23"/><rect x="11.5" y="5" width="2" height="2"/><rect x="15" y="5" width="2" height="2"/><rect x="18.5" y="5" width="2" height="2"/><rect x="11.5" y="9" width="2" height="2"/><rect x="15" y="9" width="2" height="2"/><rect x="18.5" y="9" width="2" height="2"/><rect x="11.5" y="13" width="2" height="2"/><rect x="15" y="13" width="2" height="2"/><rect x="18.5" y="13" width="2" height="2"/><rect x="11.5" y="17" width="2" height="2"/><rect x="15" y="17" width="2" height="2"/><rect x="18.5" y="17" width="2" height="2"/></svg>
-                <svg class="level-icon level-icon-fill" viewBox="0 0 32 28" fill="currentColor" aria-hidden="true"><rect x="9" y="2" width="14" height="23"/></svg>
+              <div class="level-bar-wrap">
+                <img class="level-bar level-bar-outline" src="assets/icons/level-hard.svg" alt="" />
+                <img class="level-bar level-bar-fill" src="assets/icons/level-hard.svg" alt="" />
               </div>
-              <div class="level-dots" id="levelDotsHard"></div>
+              <div class="level-dots" id="levelDotsHard" hidden></div>
             </div>
           </div>
         </div>
@@ -261,8 +268,8 @@
       <p class="explainer-subtitle">The game has 3 difficulty levels</p>
       <div class="explainer-items">
         <div class="explainer-item">
-          <div class="explainer-icon">
-            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 4 L28 14 V25 H4 V14 Z" stroke-linejoin="round"/><rect x="13" y="17" width="6" height="8"/></svg>
+          <div class="explainer-icon explainer-level-icon">
+            <img src="assets/icons/level-easy.svg" alt="" />
           </div>
           <div class="explainer-text">
             <strong>Easy — Questions 1 to 8</strong>
@@ -270,8 +277,8 @@
           </div>
         </div>
         <div class="explainer-item">
-          <div class="explainer-icon">
-            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="19"/><rect x="9" y="10" width="3" height="3"/><rect x="14.5" y="10" width="3" height="3"/><rect x="20" y="10" width="3" height="3"/><rect x="9" y="15" width="3" height="3"/><rect x="14.5" y="15" width="3" height="3"/><rect x="20" y="15" width="3" height="3"/><rect x="13" y="20" width="6" height="5"/></svg>
+          <div class="explainer-icon explainer-level-icon">
+            <img src="assets/icons/level-medium.svg" alt="" />
           </div>
           <div class="explainer-text">
             <strong>Medium — Questions 9 to 15</strong>
@@ -279,8 +286,8 @@
           </div>
         </div>
         <div class="explainer-item">
-          <div class="explainer-icon">
-            <svg viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="14" height="23"/><rect x="11.5" y="5" width="2" height="2"/><rect x="15" y="5" width="2" height="2"/><rect x="18.5" y="5" width="2" height="2"/><rect x="11.5" y="9" width="2" height="2"/><rect x="15" y="9" width="2" height="2"/><rect x="18.5" y="9" width="2" height="2"/><rect x="11.5" y="13" width="2" height="2"/><rect x="15" y="13" width="2" height="2"/><rect x="18.5" y="13" width="2" height="2"/><rect x="11.5" y="17" width="2" height="2"/><rect x="15" y="17" width="2" height="2"/><rect x="18.5" y="17" width="2" height="2"/></svg>
+          <div class="explainer-icon explainer-level-icon">
+            <img src="assets/icons/level-hard.svg" alt="" />
           </div>
           <div class="explainer-text">
             <strong>Hard — Questions 16 to 20</strong>
@@ -332,6 +339,7 @@
   <div class="modal" id="resultModal" role="dialog" aria-labelledby="resultTitle" aria-describedby="resultMessage">
     <div class="modal-content">
       <h2 class="modal-title" id="resultTitle">Result</h2>
+      <div class="questions-left" id="resultQuestionsLeft" aria-live="polite"></div>
       <div class="modal-message" id="resultMessage" aria-live="polite">Your answer was correct!</div>
       <button class="modal-button" id="resultButton" aria-label="Continue to next question">Continue</button>
     </div>
@@ -377,8 +385,12 @@
 
       <div class="certificate-buttons" role="group" aria-label="Certificate actions">
         <button class="modal-button" id="addToLeaderboardBtn" style="display: none;" aria-label="Add your score to the leaderboard">Add to Leaderboard</button>
-        <button class="modal-button" id="downloadCertificateBtn" aria-label="Download your certificate">Download Certificate</button>
-        <button class="modal-button" id="playAgain" aria-label="Start a new game">Play Again</button>
+        <button class="modal-button cert-download-btn" id="downloadCertificateBtn" aria-label="Download your certificate" title="Download Certificate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4 V15" stroke-linecap="round"/><path d="M7 11 L12 16 L17 11" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="19" x2="18" y2="19" stroke-linecap="round"/></svg>
+        </button>
+        <button class="modal-button cert-play-again-btn" id="playAgain" aria-label="Start a new game" title="Play Again">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 6.5 L17 12 L9 17.5 Z"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -387,6 +399,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=fc1"></script>
+  <script type="module" src="script.js?v=fc12"></script>
 </body>
 </html>

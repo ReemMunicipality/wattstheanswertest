@@ -9,6 +9,64 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Background video controller (intro / loop / outro from a single file) ---
+// Pre-render the last video frame to a static image so the in-game backdrop is
+// always the final "all buildings" composition, regardless of when the user clicks Start.
+const finalFrame = (() => {
+    let ready = false;
+
+    function applyToBody() {
+        if (ready) document.body.classList.add('has-end-frame');
+    }
+
+    async function capture() {
+        try {
+            const hidden = document.createElement('video');
+            hidden.muted = true;
+            hidden.playsInline = true;
+            hidden.preload = 'auto';
+            hidden.src = 'assets/bg-city.mp4?v=hq1';
+
+            await new Promise((resolve, reject) => {
+                hidden.addEventListener('loadedmetadata', resolve, { once: true });
+                hidden.addEventListener('error', () => reject(new Error('video metadata load failed')), { once: true });
+                hidden.load();
+            });
+
+            hidden.currentTime = Math.max(0, hidden.duration - 0.05);
+            await new Promise((resolve, reject) => {
+                hidden.addEventListener('seeked', resolve, { once: true });
+                hidden.addEventListener('error', () => reject(new Error('video seek failed')), { once: true });
+            });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = hidden.videoWidth;
+            canvas.height = hidden.videoHeight;
+            canvas.getContext('2d').drawImage(hidden, 0, 0);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+            document.documentElement.style.setProperty('--end-frame-url', `url(${dataUrl})`);
+            ready = true;
+            applyToBody();
+
+            hidden.removeAttribute('src');
+            hidden.load();
+        } catch (err) {
+            console.warn('Could not preload final video frame:', err);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', capture, { once: true });
+    } else {
+        capture();
+    }
+
+    return {
+        isReady() { return ready; },
+        apply: applyToBody,
+        clear() { document.body.classList.remove('has-end-frame'); }
+    };
+})();
+
 const videoController = (() => {
     const OUTRO_RATE = 30; // reverse playback framerate
     const OUTRO_STEP = 1 / OUTRO_RATE;
@@ -53,6 +111,7 @@ const videoController = (() => {
     function playIntroThenLoop() {
         const v = getVideo();
         if (!v) return;
+        finalFrame.clear();
         if (outroRAF) cancelAnimationFrame(outroRAF);
         outroRAF = null;
         lastOutroTick = 0;
@@ -64,6 +123,7 @@ const videoController = (() => {
     function playOutro() {
         const v = getVideo();
         if (!v) return;
+        finalFrame.clear();
         mode = 'outro';
         v.pause();
         // Start from the final frame and reverse to 0
@@ -79,8 +139,12 @@ const videoController = (() => {
         if (outroRAF) cancelAnimationFrame(outroRAF);
         outroRAF = null;
         mode = 'static';
+        // Try the captured-image swap first (most reliable backdrop)
+        finalFrame.apply();
+        // Belt-and-braces: also snap the live video to the end frame
         const snapToEnd = () => {
-            v.currentTime = Math.max(0, v.duration - 0.05);
+            const target = Math.max(0, v.duration - 0.05);
+            v.currentTime = target;
             v.pause();
         };
         if (isFinite(v.duration) && v.duration > 0) {
@@ -866,6 +930,13 @@ function updateProgressBar() {
         pointsPill.classList.toggle('earned', moneyLadder[idx].value > 0);
     }
 
+    // Update the questions counter next to the Points pill
+    const questionsCounter = document.getElementById('questionsCounter');
+    if (questionsCounter) {
+        const current = Math.min(currentQuestionIndex + 1, TOTAL_QUESTIONS);
+        questionsCounter.textContent = `${current} / ${TOTAL_QUESTIONS}`;
+    }
+
     // Update the 3-zone level row (8 easy + 7 medium + 6 hard dots)
     updateLevelRow(idx);
 }
@@ -1214,7 +1285,7 @@ async function showLeaderboard() {
     startScreen.classList.remove('active');
     certificateModal.classList.remove('active');
     leaderboardModal.classList.add('active');
-    leaderboardTableBody.innerHTML = '<tr><td colspan="4">Loading scores...</td></tr>';
+    leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">Loading scores...</td></tr>';
 
     try {
         const { data, error } = await supabase
@@ -1229,7 +1300,7 @@ async function showLeaderboard() {
         leaderboardTableBody.innerHTML = '';
 
         if (!data || data.length === 0) {
-            leaderboardTableBody.innerHTML = '<tr><td colspan="4">No scores yet. Be the first!</td></tr>';
+            leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">No scores yet. Be the first!</td></tr>';
             return;
         }
 
@@ -1248,7 +1319,7 @@ async function showLeaderboard() {
 
     } catch (error) {
         console.error("Error getting leaderboard: ", error);
-        leaderboardTableBody.innerHTML = '<tr><td colspan="4">Could not load scores. Please try again.</td></tr>';
+        leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">Could not load scores. Please try again.</td></tr>';
     }
 }
 
@@ -1418,12 +1489,23 @@ function selectAnswer(selectedIndex) {
         
         // Use innerHTML to render formatted message
         resultMessage.innerHTML = message;
-        
+        updateResultQuestionsLeft();
+
         updateMoneyLadder();
-        resultButton.textContent = "Next Question";
+        resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
         resultModal.classList.add('active');
         gameActive = false;
     }, 1000);
+}
+
+function updateResultQuestionsLeft() {
+    const el = document.getElementById('resultQuestionsLeft');
+    if (!el) return;
+    const answered = Math.min(currentQuestionIndex + 1, TOTAL_QUESTIONS);
+    const remaining = Math.max(0, TOTAL_QUESTIONS - answered);
+    el.textContent = remaining === 1
+        ? '1 question left'
+        : `${remaining} questions left`;
 }
 
 function handleTimeout() {
@@ -1447,11 +1529,13 @@ function handleTimeout() {
 
     // Use innerHTML to render formatted message
     resultMessage.innerHTML = message;
-    
+    updateResultQuestionsLeft();
+
     const options = document.querySelectorAll('.option');
     if (currentQuestion && options.length > currentQuestion.correct) {
        options[currentQuestion.correct].style.background = 'linear-gradient(135deg, #0a6a0a, #0a8a0a)';
     }
+    resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
     resultModal.classList.add('active');
 }
 

@@ -520,13 +520,30 @@ body {
   gap: 10px;
 }
 
+.table-label-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0.5rem 0 0.75rem;
+}
+.table-pill {
+  background: #fff;
+  border: 1.5px solid rgba(13, 42, 74, 0.18);
+  color: var(--rd-navy);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 6px 18px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
 .leaderboard-container {
   max-height: 400px;
   width: 100%;
   overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  border: none;
 }
 
 .leaderboard-table {
@@ -536,23 +553,29 @@ body {
 
 .leaderboard-table th,
 .leaderboard-table td {
-  padding: 12px 15px;
+  padding: 12px 18px;
   text-align: left;
 }
 
 .leaderboard-table th {
-  background-color: #f4f4f4;
-  font-weight: 600;
+  background-color: var(--rd-navy);
+  color: #fff;
+  font-weight: 700;
   position: sticky;
   top: 0;
+  letter-spacing: 0.3px;
 }
 
+.leaderboard-table tbody tr {
+  background-color: #f4f4f4;
+  color: var(--rd-navy);
+}
 .leaderboard-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #ececec;
 }
 
 .leaderboard-table tbody tr:hover {
-  background-color: #f1f1f1;
+  background-color: #e6e6e6;
 }
 
 .leaderboard-table td:first-child {
@@ -562,7 +585,15 @@ body {
 }
 .leaderboard-table td:last-child {
   font-weight: 700;
-  color: var(--primary-accent);
+  color: var(--rd-navy);
+}
+/* Empty-state row (e.g., "Could not load the scores. Please try again.") */
+.leaderboard-table tbody tr.lb-empty td {
+  text-align: center;
+  color: var(--rd-navy);
+  font-weight: 500;
+  background-color: #f4f4f4;
+  padding: 14px 18px;
 }
 
 /* Lifeline Dropdown Styles */
@@ -1202,6 +1233,21 @@ body {
   transition: opacity 0.6s ease;
 }
 
+/* When the captured final-frame image is ready and gameplay has started,
+   replace the live video element with the static image for a guaranteed backdrop. */
+body.has-end-frame .bg-video { display: none !important; }
+body.has-end-frame::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: var(--end-frame-url);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+  pointer-events: none;
+}
+
 /* Keep the frozen final video frame visible throughout gameplay */
 body.in-game::before {
   content: '';
@@ -1649,10 +1695,45 @@ body.in-game .footer-logos { display: none !important; }
   border: none;
 }
 #resultModal .modal-title { color: var(--rd-navy); }
+#resultModal .questions-left {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rd-gold);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin: -0.5rem 0 0.85rem;
+}
 #resultModal .modal-button {
   background: var(--rd-navy) !important;
-  color: #fff !important;
+  color: var(--rd-gold) !important;
   box-shadow: 0 4px 0 rgba(0,0,0,0.2) !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.7rem 1.4rem !important;
+}
+#resultModal .modal-button .btn-label {
+  color: var(--rd-gold);
+  font-weight: 600;
+}
+#resultModal .modal-button .btn-skip-fwd {
+  width: 20px;
+  height: 20px;
+  color: var(--rd-gold);
+  flex-shrink: 0;
+}
+#resultModal .modal-button:hover,
+#resultModal .modal-button:focus-visible {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+}
+#resultModal .modal-button:hover .btn-label,
+#resultModal .modal-button:hover .btn-skip-fwd,
+#resultModal .modal-button:focus-visible .btn-label,
+#resultModal .modal-button:focus-visible .btn-skip-fwd {
+  color: var(--rd-navy);
 }
 
 /* Theme all modal buttons to navy/gold */
@@ -1720,6 +1801,20 @@ body.in-game .footer-logos { display: none !important; }
   justify-content: center;
 }
 .explainer-icon svg { width: 22px; height: 22px; }
+.explainer-icon.explainer-level-icon {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  width: 80px;
+  min-width: 80px;
+  height: 60px;
+}
+.explainer-icon.explainer-level-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
 .explainer-text {
   display: flex;
   flex-direction: column;
@@ -1968,52 +2063,127 @@ body.in-game .footer-logos { display: none !important; }
   justify-content: center;
   gap: 1.5rem;
 }
-.modal-button.icon-btn.side-btn {
-  background: var(--rd-navy) !important;
-  color: var(--rd-gold) !important;
-  width: 64px !important;
-  height: 64px !important;
-  border-radius: 14px !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.22) !important;
-  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
-}
-.modal-button.icon-btn.side-btn svg { width: 30px; height: 30px; }
-.modal-button.icon-btn.side-btn:hover,
-.modal-button.icon-btn.side-btn:focus-visible {
-  background: #1e4a7a !important;
-  color: var(--rd-gold-soft) !important;
-  transform: translateY(-2px);
-}
-.modal-button.icon-btn.side-btn:active {
-  background: var(--rd-gold) !important;
-  color: var(--rd-navy) !important;
-  transform: translateY(1px);
-}
-
+.modal-button.icon-btn.side-btn,
 .modal-button.icon-btn.play-btn-big {
-  background: var(--rd-navy) !important;
-  color: var(--rd-gold) !important;
-  width: 96px !important;
-  height: 80px !important;
-  border-radius: 14px !important;
+  background: transparent !important;
   padding: 0 !important;
   border: none !important;
-  box-shadow: 0 5px 0 rgba(0,0,0,0.22) !important;
-  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  box-shadow: none !important;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  overflow: visible;
 }
-.modal-button.icon-btn.play-btn-big svg { width: 46px; height: 46px; }
+.modal-button.icon-btn .btn-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.22));
+}
+.modal-button.icon-btn.side-btn {
+  width: 88px !important;
+  height: 60px !important;
+}
+.modal-button.icon-btn.play-btn-big {
+  width: 96px !important;
+  height: 96px !important;
+}
+.modal-button.icon-btn.side-btn:hover,
+.modal-button.icon-btn.side-btn:focus-visible,
 .modal-button.icon-btn.play-btn-big:hover,
 .modal-button.icon-btn.play-btn-big:focus-visible {
-  background: #1e4a7a !important;
-  color: var(--rd-gold-soft) !important;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  filter: none;
 }
+.modal-button.icon-btn.side-btn:hover .btn-icon,
+.modal-button.icon-btn.side-btn:focus-visible .btn-icon,
+.modal-button.icon-btn.play-btn-big:hover .btn-icon,
+.modal-button.icon-btn.play-btn-big:focus-visible .btn-icon {
+  filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.22)) brightness(1.08);
+}
+.modal-button.icon-btn.side-btn:active,
 .modal-button.icon-btn.play-btn-big:active {
+  transform: translateY(2px);
+}
+.modal-button.icon-btn.side-btn:active .btn-icon,
+.modal-button.icon-btn.play-btn-big:active .btn-icon {
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.22));
+}
+
+/* --- Certificate footer buttons (Download + Play Again) --- */
+.modal-button.cert-download-btn,
+.modal-button.cert-play-again-btn {
+  padding: 0 !important;
+  min-width: 0 !important;
+  border: none !important;
+  font-size: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.modal-button.cert-download-btn {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22) !important;
+}
+.modal-button.cert-download-btn svg { width: 26px; height: 26px; }
+.modal-button.cert-download-btn:hover,
+.modal-button.cert-download-btn:focus-visible {
   background: var(--rd-gold) !important;
   color: var(--rd-navy) !important;
+  transform: translateY(-1px);
+}
+.modal-button.cert-play-again-btn {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22) !important;
+}
+.modal-button.cert-play-again-btn svg { width: 26px; height: 26px; }
+.modal-button.cert-play-again-btn:hover,
+.modal-button.cert-play-again-btn:focus-visible {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: translateY(-1px);
+}
+.modal-button.cert-download-btn:active,
+.modal-button.cert-play-again-btn:active {
   transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22) !important;
+}
+
+/* --- Skip-back square button (modal close/back) --- */
+.modal-button.skip-back-btn {
+  background: var(--rd-navy) !important;
+  color: var(--rd-gold) !important;
+  width: 56px !important;
+  height: 56px !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22) !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem auto 0 !important;
+  font-size: 0 !important;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.modal-button.skip-back-btn svg { width: 28px; height: 28px; }
+.modal-button.skip-back-btn:hover,
+.modal-button.skip-back-btn:focus-visible {
+  background: var(--rd-gold) !important;
+  color: var(--rd-navy) !important;
+  transform: translateY(-1px);
+}
+.modal-button.skip-back-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22) !important;
 }
 
 /* --- Sound toggle: icon-only speaker --- */
@@ -2071,8 +2241,11 @@ body.in-game .footer-logos { display: none !important; }
 }
 .helplines-block .lifelines-container {
   display: inline-flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   margin: 0 !important;
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid var(--rd-gold);
 }
 .helplines-block .helplines-label {
   font-size: 0.65rem;
@@ -2081,40 +2254,51 @@ body.in-game .footer-logos { display: none !important; }
   color: var(--rd-navy);
   text-transform: uppercase;
 }
-/* Smaller helpline icons matching the concept */
+/* In-game helpline icons — gold tap and clock+, navy circle with gold play for skip */
 .helplines-block .lifeline {
   width: 30px !important;
   height: 30px !important;
   border: none !important;
   background: transparent !important;
   color: var(--rd-gold) !important;
+  border-radius: 50% !important;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 .helplines-block .lifeline:hover {
   background: var(--rd-gold) !important;
   color: var(--rd-navy) !important;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
-.helplines-block .lifeline svg { width: 18px; height: 18px; }
+.helplines-block .lifeline svg { width: 20px; height: 20px; }
 .helplines-block .lifeline.used {
-  background: var(--rd-gold) !important;
-  color: var(--rd-navy) !important;
-  border: none !important;
-  opacity: 1 !important;
+  color: var(--rd-grey) !important;
+  opacity: 0.45;
+  pointer-events: none;
 }
-/* Highlight the middle helpline like the PDF */
-.helplines-block .lifeline:nth-child(2) {
+/* Skip is the third helpline: navy circle with gold play arrow */
+.helplines-block #skipQuestion {
   background: var(--rd-navy) !important;
   color: var(--rd-gold) !important;
-  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
 }
-.helplines-block .lifeline:nth-child(2):hover {
+.helplines-block #skipQuestion:hover {
   background: var(--rd-gold) !important;
   color: var(--rd-navy) !important;
+}
+.helplines-block #skipQuestion.used {
+  background: rgba(13, 42, 74, 0.35) !important;
+  color: rgba(229, 186, 74, 0.45) !important;
 }
 
 /* Points pill — top right of card */
-.points-pill {
+.points-and-progress {
   justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.points-pill {
   background: #fff;
   border: 1.5px solid rgba(13, 42, 74, 0.18);
   color: var(--rd-gold);
@@ -2128,6 +2312,17 @@ body.in-game .footer-logos { display: none !important; }
   background: var(--rd-navy);
   border-color: var(--rd-navy);
   color: var(--rd-gold);
+}
+.questions-counter {
+  background: transparent;
+  border: 1.5px solid rgba(13, 42, 74, 0.35);
+  color: var(--rd-navy);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 /* --- Bottom: 3-zone level row --- */
@@ -2147,35 +2342,37 @@ body.in-game .footer-logos { display: none !important; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   --fill: 0;
 }
-.level-icon-wrap {
+.level-bar-wrap {
   position: relative;
-  width: 36px;
-  height: 32px;
   display: inline-block;
+  height: 70px;
 }
-.level-zone .level-icon {
+.level-zone-easy .level-bar-wrap { width: 132px; }
+.level-zone-medium .level-bar-wrap { width: 115px; }
+.level-zone-hard .level-bar-wrap { width: 98px; }
+.level-bar {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  color: var(--rd-navy);
 }
-.level-icon-outline,
-.level-icon-fill {
+.level-bar-outline,
+.level-bar-fill {
   position: absolute;
   inset: 0;
 }
-.level-icon-outline { opacity: 0.35; }
-.level-icon-fill {
-  clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
-  -webkit-clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
+.level-bar-outline {
+  opacity: 0.22;
+  filter: grayscale(0.6);
+}
+.level-bar-fill {
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
+  -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
 }
-.level-zone-easy .level-icon-fill { color: #4caf7a; }
-.level-zone-medium .level-icon-fill { color: #e5ba4a; }
-.level-zone-hard .level-icon-fill { color: #2f7bd6; }
+.level-zone .level-dots { display: none !important; }
 .level-dots {
   display: inline-flex;
   gap: 3px;
@@ -2198,17 +2395,13 @@ body.in-game .footer-logos { display: none !important; }
 /* --- Mobile tweaks for the new layout --- */
 @media (max-width: 600px) {
   .modal-button.icon-btn.play-btn-big {
-    width: 78px !important;
-    height: 64px !important;
-    border-radius: 12px !important;
+    width: 74px !important;
+    height: 74px !important;
   }
-  .modal-button.icon-btn.play-btn-big svg { width: 36px; height: 36px; }
   .modal-button.icon-btn.side-btn {
-    width: 52px !important;
-    height: 52px !important;
-    border-radius: 12px !important;
+    width: 72px !important;
+    height: 48px !important;
   }
-  .modal-button.icon-btn.side-btn svg { width: 24px; height: 24px; }
   #startScreen .start-buttons { gap: 1rem; }
 
   .top-toggles .sound-toggle svg { width: 26px; height: 26px; }
@@ -2219,7 +2412,9 @@ body.in-game .footer-logos { display: none !important; }
   .helplines-block .lifeline svg { width: 14px; height: 14px; }
   .helplines-block .helplines-label { font-size: 0.55rem; letter-spacing: 1px; }
 
-  .level-row { gap: 0.6rem; }
-  .level-icon-wrap { width: 28px; height: 24px; }
-  .level-dots span { width: 5px; height: 5px; }
+  .level-row { gap: 0.4rem; }
+  .level-bar-wrap { height: 50px; }
+  .level-zone-easy .level-bar-wrap { width: 94px; }
+  .level-zone-medium .level-bar-wrap { width: 82px; }
+  .level-zone-hard .level-bar-wrap { width: 70px; }
 }

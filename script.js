@@ -958,9 +958,9 @@ function updateProgressBar() {
 
 function updateLevelRow(idx) {
     const zones = [
-        { id: 'levelDotsEasy', total: 8, startIdx: 1, zoneEl: '.level-zone-easy' },
-        { id: 'levelDotsMedium', total: 7, startIdx: 9, zoneEl: '.level-zone-medium' },
-        { id: 'levelDotsHard', total: 5, startIdx: 16, zoneEl: '.level-zone-hard' },
+        { id: 'levelDotsEasy', total: 8, startIdx: 1, zoneEl: '.level-zone-easy', fillId: 'levelFillEasy', prefix: 'easy' },
+        { id: 'levelDotsMedium', total: 7, startIdx: 9, zoneEl: '.level-zone-medium', fillId: 'levelFillMedium', prefix: 'medium' },
+        { id: 'levelDotsHard', total: 5, startIdx: 16, zoneEl: '.level-zone-hard', fillId: 'levelFillHard', prefix: 'hard' },
     ];
     zones.forEach(zone => {
         const dotsEl = document.getElementById(zone.id);
@@ -975,12 +975,21 @@ function updateLevelRow(idx) {
         Array.from(dotsEl.children).forEach((dot, i) => {
             dot.classList.toggle('filled', i < completedInZone);
         });
+        // Swap the building fill image to the matching step file
+        const fillImg = document.getElementById(zone.fillId);
+        if (fillImg) {
+            const desiredSrc = completedInZone > 0
+                ? `assets/icons/${zone.prefix}-step-${completedInZone}.svg`
+                : '';
+            if (fillImg.getAttribute('src') !== desiredSrc) {
+                fillImg.setAttribute('src', desiredSrc);
+            }
+            fillImg.style.visibility = completedInZone > 0 ? 'visible' : 'hidden';
+        }
         const zoneEl = document.querySelector(zone.zoneEl);
         if (zoneEl) {
             zoneEl.classList.toggle('active', completedInZone > 0 && completedInZone < zone.total);
             zoneEl.classList.toggle('completed', completedInZone >= zone.total);
-            const fillFraction = zone.total > 0 ? completedInZone / zone.total : 0;
-            zoneEl.style.setProperty('--fill', fillFraction);
         }
     });
 }

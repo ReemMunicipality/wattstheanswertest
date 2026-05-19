@@ -2402,12 +2402,7 @@ body.in-game .footer-logos { display: none !important; }
   opacity: 0.22;
   filter: grayscale(0.6);
 }
-/* Building fills smoothly left-to-right as questions are answered */
-.level-piece-building-fill {
-  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
-  -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
-  transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
-}
+/* Building fill: src is swapped to per-step preview SVG by JS */
 /* Dots are individual circles — each lights up discretely */
 .level-zone .level-dots {
   display: inline-flex !important;

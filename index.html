@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc21" />
+  <link rel="stylesheet" href="style.css?v=fc22" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -195,7 +195,7 @@
               <div class="level-bar-wrap">
                 <div class="level-building-layer">
                   <img class="level-piece level-piece-outline" src="assets/icons/level-easy-building.svg" alt="" />
-                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-easy-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill" id="levelFillEasy" src="" alt="" />
                 </div>
                 <div class="level-dots" id="levelDotsEasy"></div>
               </div>
@@ -204,7 +204,7 @@
               <div class="level-bar-wrap">
                 <div class="level-building-layer">
                   <img class="level-piece level-piece-outline" src="assets/icons/level-medium-building.svg" alt="" />
-                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-medium-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill" id="levelFillMedium" src="" alt="" />
                 </div>
                 <div class="level-dots" id="levelDotsMedium"></div>
               </div>
@@ -213,7 +213,7 @@
               <div class="level-bar-wrap">
                 <div class="level-building-layer">
                   <img class="level-piece level-piece-outline" src="assets/icons/level-hard-building.svg" alt="" />
-                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-hard-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill" id="levelFillHard" src="" alt="" />
                 </div>
                 <div class="level-dots" id="levelDotsHard"></div>
               </div>
@@ -406,6 +406,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=fc16"></script>
+  <script type="module" src="script.js?v=fc22"></script>
 </body>
 </html>

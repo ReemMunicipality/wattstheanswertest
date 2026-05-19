@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc22" />
+  <link rel="stylesheet" href="style.css?v=fc27" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -76,9 +76,12 @@
           </tbody>
         </table>
       </div>
-      <button class="modal-button skip-back-btn" id="backToStartBtn" aria-label="Return to main menu" title="Back">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-      </button>
+      <div class="back-btn-wrap">
+        <button class="modal-button skip-back-btn" id="backToStartBtn" aria-label="Return to main menu" title="Back">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+        </button>
+        <span class="back-btn-label">Back</span>
+      </div>
     </div>
   </div>
 
@@ -112,11 +115,11 @@
       <div class="help-section">
         <h3>Helplines</h3>
         <p>You get one of each helpline per game. Use them wisely!</p>
-        <h4>Elimination:</h4>
+        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-elimination.svg" alt="Elimination icon" />Elimination:</h4>
         <p>Removes one random incorrect answer to improve your odds.</p>
-        <h4>Add Time:</h4>
+        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-add-time.svg" alt="Add Time icon" />Add Time:</h4>
         <p>Adds an extra 30 seconds to the clock when you need more time to think.</p>
-        <h4>Skip Question:</h4>
+        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-skip.svg" alt="Skip icon" />Skip Question:</h4>
         <p>Skips the current question and moves you to the next one without losing progress.</p>
       </div>
 
@@ -142,9 +145,12 @@
       </div>
     </div>
     
-    <button class="modal-button skip-back-btn" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-    </button>
+    <div class="back-btn-wrap">
+      <button class="modal-button skip-back-btn" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+      </button>
+      <span class="back-btn-label">Back</span>
+    </div>
   </div>
 </div>
 
@@ -406,6 +412,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=fc22"></script>
+  <script type="module" src="script.js?v=fc25"></script>
 </body>
 </html>

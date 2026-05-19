@@ -1,12 +1,26 @@
-// Supabase SDK
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// Leaderboard backend — Cloudflare Worker + D1 SQLite
+const LEADERBOARD_API = 'https://wattstheanswer-api.eer-3ff.workers.dev';
 
-// Supabase configuration
-const SUPABASE_URL = 'https://foovsizagoilfwoocoxo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvb3ZzaXphZ29pbGZ3b29jb3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDA0ODMsImV4cCI6MjA4NTA3NjQ4M30.TqMejiVHrLYvock70HYxpo0lA5T84MgVxK5PCeQsoaY';
-
-// Initialize Supabase client
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const leaderboardApi = {
+    async list() {
+        const res = await fetch(`${LEADERBOARD_API}/leaderboard`);
+        if (!res.ok) throw new Error(`Leaderboard fetch failed: ${res.status}`);
+        const body = await res.json();
+        return body.data || [];
+    },
+    async insert(entry) {
+        const res = await fetch(`${LEADERBOARD_API}/leaderboard`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(entry),
+        });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error || `Insert failed: ${res.status}`);
+        }
+        return res.json();
+    },
+};
 
 // --- Background video controller (intro / loop / outro from a single file) ---
 // Pre-render the last video frame to a static image so the in-game backdrop is
@@ -1269,22 +1283,11 @@ let previousDifficulty = null;
 // --- Leaderboard Functions ---
 async function checkScoreQualifies(score, time) {
     try {
-        const { data, error } = await supabase
-            .from('leaderboard')
-            .select('score, time')
-            .order('score', { ascending: false })
-            .order('time', { ascending: true })
-            .limit(15);
-
-        if (error) throw error;
-
+        const data = await leaderboardApi.list();
         if (!data || data.length < 15) return true;
-
         const lowestEntry = data[data.length - 1];
-
         if (score > lowestEntry.score) return true;
         if (score === lowestEntry.score && time < lowestEntry.time) return true;
-
         return false;
     } catch (error) {
         console.error("Error checking score qualification:", error);
@@ -1294,12 +1297,8 @@ async function checkScoreQualifies(score, time) {
 
 async function addScoreToLeaderboard(name, score, amount, time) {
     try {
-        const { error } = await supabase
-            .from('leaderboard')
-            .insert([{ name, score, amount, time }]);
-
-        if (error) throw error;
-        console.log("Score successfully added to Supabase!");
+        await leaderboardApi.insert({ name, score, amount, time });
+        console.log("Score successfully added to leaderboard!");
     } catch (error) {
         console.error("Error adding score: ", error);
     }
@@ -1312,14 +1311,7 @@ async function showLeaderboard() {
     leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">Loading scores...</td></tr>';
 
     try {
-        const { data, error } = await supabase
-            .from('leaderboard')
-            .select('*')
-            .order('score', { ascending: false })
-            .order('time', { ascending: true })
-            .limit(15);
-
-        if (error) throw error;
+        const data = await leaderboardApi.list();
 
         leaderboardTableBody.innerHTML = '';
 
@@ -1389,6 +1381,18 @@ function stopQuestionTimer() {
     clearInterval(questionTimerInterval);
 }
 
+function applyTimerColor(seconds) {
+    if (!questionTimerElement) return;
+    questionTimerElement.classList.remove('timer-safe', 'timer-warn', 'timer-danger', 'urgent');
+    if (seconds <= 10) {
+        questionTimerElement.classList.add('timer-danger', 'urgent');
+    } else if (seconds <= 20) {
+        questionTimerElement.classList.add('timer-warn');
+    } else {
+        questionTimerElement.classList.add('timer-safe');
+    }
+}
+
 function resumeQuestionTimer() {
     if (!gameActive) return;
     questionTimerInterval = setInterval(() => {
@@ -1397,9 +1401,7 @@ function resumeQuestionTimer() {
             const mm = String(Math.floor(currentQuestionTimeLeft / 60)).padStart(2, '0');
             const ss = String(currentQuestionTimeLeft % 60).padStart(2, '0');
             questionTimerElement.textContent = `${mm}:${ss}`;
-            if (currentQuestionTimeLeft <= 10) {
-                questionTimerElement.classList.add('urgent');
-            }
+            applyTimerColor(currentQuestionTimeLeft);
         }
         if (currentQuestionTimeLeft <= 0) handleTimeout();
     }, 1000);
@@ -1413,7 +1415,7 @@ function startQuestionTimer() {
         const ss = String(currentQuestionTimeLeft % 60).padStart(2, '0');
         questionTimerElement.textContent = `${mm}:${ss}`;
         questionTimerElement.style.visibility = 'visible';
-        questionTimerElement.classList.remove('urgent');
+        applyTimerColor(currentQuestionTimeLeft);
     }
     resumeQuestionTimer();
 }
@@ -1602,11 +1604,18 @@ function updateMoneyLadder() {
     if (currentLevel) currentLevel.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+function markHelplineUsed(button, usedIconPath) {
+    if (!button) return;
+    button.classList.add('used');
+    const img = button.querySelector('img.lifeline-icon');
+    if (img) img.setAttribute('src', usedIconPath);
+}
+
 function useFiftyFifty() {
     if (fiftyFiftyUsed || !gameActive) return;
     playSound(clickSound);
     fiftyFiftyUsed = true;
-    fiftyFiftyBtn.classList.add('used');
+    markHelplineUsed(fiftyFiftyBtn, 'assets/icons/helpline-elimination-used.svg');
 
     const options = document.querySelectorAll('.option');
     let wrongOptions = [];
@@ -1629,7 +1638,7 @@ function useAddTime() {
     if (addTimeUsed || !gameActive) return;
     playSound(clickSound);
     addTimeUsed = true;
-    addTimeBtn.classList.add('used');
+    markHelplineUsed(addTimeBtn, 'assets/icons/helpline-add-time-used.svg');
 
     // Add 30 seconds to the current timer
     currentQuestionTimeLeft += 30;
@@ -1646,7 +1655,7 @@ function useSkipQuestion() {
     if (skipQuestionUsed || !gameActive) return;
     playSound(clickSound);
     skipQuestionUsed = true;
-    skipQuestionBtn.classList.add('used');
+    markHelplineUsed(skipQuestionBtn, 'assets/icons/helpline-skip-used.svg');
     stopQuestionTimer();
 
     // Skip to next question without affecting prize level
@@ -1834,6 +1843,14 @@ function resetGameState() {
     fiftyFiftyBtn.classList.remove('used');
     addTimeBtn.classList.remove('used');
     skipQuestionBtn.classList.remove('used');
+    // Restore the default helpline icons
+    const restore = (btn, src) => {
+        const img = btn?.querySelector('img.lifeline-icon');
+        if (img) img.setAttribute('src', src);
+    };
+    restore(fiftyFiftyBtn, 'assets/icons/helpline-elimination.svg');
+    restore(addTimeBtn, 'assets/icons/helpline-add-time.svg');
+    restore(skipQuestionBtn, 'assets/icons/helpline-skip.svg');
 
     // Reset progress bar
     if (progressBar) {

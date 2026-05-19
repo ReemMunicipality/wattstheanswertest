@@ -972,6 +972,17 @@ body {
   color: var(--rd-navy);
   margin: 0.85rem 0 0.15rem;
 }
+.help-helpline-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.help-helpline-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
 
 .help-section p {
   font-size: 0.92rem;
@@ -2197,6 +2208,22 @@ body.in-game .footer-logos { display: none !important; }
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22) !important;
 }
 
+.back-btn-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0.5rem auto 0;
+}
+.back-btn-wrap .skip-back-btn { margin: 0 !important; }
+.back-btn-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--rd-navy);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 /* --- Skip-back square button (modal close/back) --- */
 .modal-button.skip-back-btn {
   background: var(--rd-navy) !important;
@@ -2261,16 +2288,22 @@ body.in-game .footer-logos { display: none !important; }
 }
 .question-container .qcard-top .question-timer {
   justify-self: start;
-  background: transparent !important;
-  border: none !important;
+  background: #fff !important;
+  border: 1.5px solid rgba(13, 42, 74, 0.18) !important;
   color: var(--rd-navy) !important;
-  font-size: 1.05rem !important;
-  font-weight: 600 !important;
-  padding: 0 !important;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  padding: 6px 16px !important;
+  border-radius: 999px !important;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-block;
 }
-.question-timer.urgent { color: #c92a2a !important; }
-.question-timer.warning { color: #e08a1e !important; }
+.question-container .qcard-top .question-timer.timer-safe { color: var(--rd-navy) !important; }
+.question-container .qcard-top .question-timer.timer-warn { color: #d9a425 !important; }
+.question-container .qcard-top .question-timer.timer-danger,
+.question-container .qcard-top .question-timer.urgent { color: #c92a2a !important; }
+.question-container .qcard-top .question-timer.warning { color: #e08a1e !important; }
 
 /* Helplines cluster in the center */
 .helplines-block {
@@ -2303,7 +2336,7 @@ body.in-game .footer-logos { display: none !important; }
   border: none !important;
   background: transparent !important;
   border-radius: 50% !important;
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 .helplines-block .lifeline .lifeline-icon {
@@ -2316,9 +2349,7 @@ body.in-game .footer-logos { display: none !important; }
   filter: brightness(1.05);
 }
 .helplines-block .lifeline.used {
-  opacity: 0.45;
   pointer-events: none;
-  filter: grayscale(0.6);
 }
 
 /* Points pill — top right of card */
@@ -2344,12 +2375,12 @@ body.in-game .footer-logos { display: none !important; }
   color: var(--rd-gold);
 }
 .questions-counter {
-  background: transparent;
-  border: 1.5px solid rgba(13, 42, 74, 0.35);
+  background: #fff;
+  border: 1.5px solid rgba(13, 42, 74, 0.18);
   color: var(--rd-navy);
-  font-weight: 600;
-  font-size: 0.75rem;
-  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 16px;
   border-radius: 999px;
   white-space: nowrap;
   letter-spacing: 0.3px;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc18" />
+  <link rel="stylesheet" href="style.css?v=fc19" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -193,22 +193,40 @@
           <div class="level-row" id="levelRow" aria-label="Progress through difficulty zones">
             <div class="level-zone level-zone-easy" data-zone="easy">
               <div class="level-bar-wrap">
-                <img class="level-bar level-bar-outline" src="assets/icons/level-easy.svg" alt="" />
-                <img class="level-bar level-bar-fill" src="assets/icons/level-easy.svg" alt="" />
+                <div class="level-building-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-easy-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-easy-building.svg" alt="" />
+                </div>
+                <div class="level-dots-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-easy-dots.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-dots-fill" src="assets/icons/level-easy-dots.svg" alt="" />
+                </div>
               </div>
               <div class="level-dots" id="levelDotsEasy" hidden></div>
             </div>
             <div class="level-zone level-zone-medium" data-zone="medium">
               <div class="level-bar-wrap">
-                <img class="level-bar level-bar-outline" src="assets/icons/level-medium.svg" alt="" />
-                <img class="level-bar level-bar-fill" src="assets/icons/level-medium.svg" alt="" />
+                <div class="level-building-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-medium-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-medium-building.svg" alt="" />
+                </div>
+                <div class="level-dots-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-medium-dots.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-dots-fill" src="assets/icons/level-medium-dots.svg" alt="" />
+                </div>
               </div>
               <div class="level-dots" id="levelDotsMedium" hidden></div>
             </div>
             <div class="level-zone level-zone-hard" data-zone="hard">
               <div class="level-bar-wrap">
-                <img class="level-bar level-bar-outline" src="assets/icons/level-hard.svg" alt="" />
-                <img class="level-bar level-bar-fill" src="assets/icons/level-hard.svg" alt="" />
+                <div class="level-building-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-hard-building.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-building-fill" src="assets/icons/level-hard-building.svg" alt="" />
+                </div>
+                <div class="level-dots-layer">
+                  <img class="level-piece level-piece-outline" src="assets/icons/level-hard-dots.svg" alt="" />
+                  <img class="level-piece level-piece-fill level-piece-dots-fill" src="assets/icons/level-hard-dots.svg" alt="" />
+                </div>
               </div>
               <div class="level-dots" id="levelDotsHard" hidden></div>
             </div>

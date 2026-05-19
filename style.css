@@ -2377,27 +2377,43 @@ body.in-game .footer-logos { display: none !important; }
 }
 .level-bar-wrap {
   position: relative;
-  display: inline-block;
-  height: 70px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 .level-zone-easy .level-bar-wrap { width: 132px; }
 .level-zone-medium .level-bar-wrap { width: 115px; }
 .level-zone-hard .level-bar-wrap { width: 98px; }
-.level-bar {
-  display: block;
-  width: 100%;
-  height: 100%;
+.level-building-layer {
+  position: relative;
+  width: 60%;
+  height: 50px;
 }
-.level-bar-outline,
-.level-bar-fill {
+.level-dots-layer {
+  position: relative;
+  width: 100%;
+  height: 14px;
+}
+.level-piece {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
-.level-bar-outline {
+.level-piece-outline {
   opacity: 0.22;
   filter: grayscale(0.6);
 }
-.level-bar-fill {
+/* Building grows bottom-up as questions are answered */
+.level-piece-building-fill {
+  clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
+  -webkit-clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
+  transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
+}
+/* Dot row fills left-to-right */
+.level-piece-dots-fill {
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
@@ -2442,7 +2458,8 @@ body.in-game .footer-logos { display: none !important; }
   .helplines-block .helplines-label { font-size: 0.55rem; letter-spacing: 1px; }
 
   .level-row { gap: 0.4rem; }
-  .level-bar-wrap { height: 50px; }
+  .level-building-layer { height: 36px; }
+  .level-dots-layer { height: 10px; }
   .level-zone-easy .level-bar-wrap { width: 94px; }
   .level-zone-medium .level-bar-wrap { width: 82px; }
   .level-zone-hard .level-bar-wrap { width: 70px; }

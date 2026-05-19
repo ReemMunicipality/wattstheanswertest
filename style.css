@@ -2281,41 +2281,30 @@ body.in-game .footer-logos { display: none !important; }
   color: var(--rd-navy);
   text-transform: uppercase;
 }
-/* In-game helpline icons — gold tap and clock+, navy circle with gold play for skip */
+/* In-game helpline icons — each SVG ships its own circle background + colored glyph */
 .helplines-block .lifeline {
-  width: 30px !important;
-  height: 30px !important;
-  border: none !important;
-  background: transparent !important;
-  color: var(--rd-gold) !important;
-  border-radius: 50% !important;
-  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
-}
-.helplines-block .lifeline:hover {
-  background: var(--rd-gold) !important;
-  color: var(--rd-navy) !important;
-  transform: scale(1.08);
-}
-.helplines-block .lifeline svg { width: 20px; height: 20px; }
-.helplines-block .lifeline.used {
-  color: var(--rd-grey) !important;
-  opacity: 0.45;
-  pointer-events: none;
-}
-/* Skip is the third helpline: navy circle with gold play arrow */
-.helplines-block #skipQuestion {
-  background: var(--rd-navy) !important;
-  color: var(--rd-gold) !important;
   width: 32px !important;
   height: 32px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 50% !important;
+  overflow: hidden;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
-.helplines-block #skipQuestion:hover {
-  background: var(--rd-gold) !important;
-  color: var(--rd-navy) !important;
+.helplines-block .lifeline .lifeline-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-.helplines-block #skipQuestion.used {
-  background: rgba(13, 42, 74, 0.35) !important;
-  color: rgba(229, 186, 74, 0.45) !important;
+.helplines-block .lifeline:hover {
+  transform: scale(1.08);
+  filter: brightness(1.05);
+}
+.helplines-block .lifeline.used {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(0.6);
 }
 
 /* Points pill — top right of card */
@@ -2436,7 +2425,6 @@ body.in-game .footer-logos { display: none !important; }
   .question-container .qcard-top { grid-template-columns: auto auto auto; gap: 6px; }
   .points-pill { font-size: 0.75rem; padding: 5px 10px; }
   .helplines-block .lifeline { width: 26px !important; height: 26px !important; }
-  .helplines-block .lifeline svg { width: 14px; height: 14px; }
   .helplines-block .helplines-label { font-size: 0.55rem; letter-spacing: 1px; }
 
   .level-row { gap: 0.4rem; }

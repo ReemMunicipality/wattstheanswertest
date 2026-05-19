@@ -80,15 +80,29 @@ const videoController = (() => {
         return videoEl;
     }
 
+    function holdAtEnd() {
+        const v = getVideo();
+        if (!v) return;
+        if (!isFinite(v.duration) || v.duration <= 0) return;
+        mode = 'static';
+        v.pause();
+        // Sit a third of a second before the true end so the browser never
+        // fires `ended` (which on some browsers visually resets to frame 0).
+        const safe = Math.max(0, v.duration - 0.3);
+        if (Math.abs(v.currentTime - safe) > 0.05) v.currentTime = safe;
+    }
+
     function onTimeUpdate() {
         const v = getVideo();
         if (!v) return;
-        if (mode === 'intro' && v.currentTime >= v.duration - 0.05) {
-            // Intro finished → hold the final frame as a static backdrop
-            mode = 'static';
-            v.currentTime = v.duration - 0.05;
-            v.pause();
+        if (mode === 'intro' && v.currentTime >= v.duration - 0.35) {
+            holdAtEnd();
         }
+    }
+
+    function onEnded() {
+        // Safety net: if `ended` slips past the timeupdate guard, reset to a safe near-end frame.
+        if (mode === 'intro' || mode === 'static') holdAtEnd();
     }
 
     function outroStep(ts) {
@@ -154,11 +168,12 @@ const videoController = (() => {
         }
     }
 
-    // Bind timeupdate once DOM is ready
+    // Bind listeners once DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
         const v = getVideo();
         if (!v) return;
         v.addEventListener('timeupdate', onTimeUpdate);
+        v.addEventListener('ended', onEnded);
         // Kick off intro explicitly (autoplay already does this, but ensures state)
         v.play().catch(() => {});
     });

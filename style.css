@@ -2380,7 +2380,7 @@ body.in-game .footer-logos { display: none !important; }
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 .level-zone-easy .level-bar-wrap { width: 132px; }
 .level-zone-medium .level-bar-wrap { width: 115px; }
@@ -2390,11 +2390,7 @@ body.in-game .footer-logos { display: none !important; }
   width: 60%;
   height: 50px;
 }
-.level-dots-layer {
-  position: relative;
-  width: 100%;
-  height: 14px;
-}
+.level-dots-layer { display: none; }
 .level-piece {
   position: absolute;
   inset: 0;
@@ -2406,19 +2402,29 @@ body.in-game .footer-logos { display: none !important; }
   opacity: 0.22;
   filter: grayscale(0.6);
 }
-/* Building fills left-to-right as questions are answered */
+/* Building fills smoothly left-to-right as questions are answered */
 .level-piece-building-fill {
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
 }
-/* Dot row fills left-to-right */
-.level-piece-dots-fill {
-  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
-  -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
-  transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
+/* Dots are individual circles — each lights up discretely */
+.level-zone .level-dots {
+  display: inline-flex !important;
+  gap: 4px;
+  justify-content: center;
 }
-.level-zone .level-dots { display: none !important; }
+.level-zone .level-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(13, 42, 74, 0.18);
+  display: inline-block;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.level-zone-easy .level-dots span.filled { background: #86B689; }
+.level-zone-medium .level-dots span.filled { background: #E5BA4A; }
+.level-zone-hard .level-dots span.filled { background: #379BFE; }
 .level-dots {
   display: inline-flex;
   gap: 3px;

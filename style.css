@@ -2406,10 +2406,10 @@ body.in-game .footer-logos { display: none !important; }
   opacity: 0.22;
   filter: grayscale(0.6);
 }
-/* Building grows bottom-up as questions are answered */
+/* Building fills left-to-right as questions are answered */
 .level-piece-building-fill {
-  clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
-  -webkit-clip-path: inset(calc((1 - var(--fill)) * 100%) 0 0 0);
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
+  -webkit-clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
   transition: clip-path 0.45s ease, -webkit-clip-path 0.45s ease;
 }
 /* Dot row fills left-to-right */

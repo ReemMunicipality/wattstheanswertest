@@ -971,18 +971,16 @@ body {
   margin: 0 0 0.6rem;
   letter-spacing: 0.2px;
   text-transform: uppercase;
-  position: relative;
-  display: inline-block;
+  text-align: center;
+  display: block;
   padding-bottom: 6px;
 }
 .help-section h3::after {
   content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
+  display: block;
   width: 36px;
   height: 2px;
+  margin: 6px auto 0;
   background: var(--rd-gold);
   border-radius: 2px;
 }
@@ -1055,18 +1053,16 @@ body {
   font-weight: 700;
   letter-spacing: 0.2px;
   text-transform: uppercase;
-  position: relative;
-  display: inline-block;
+  text-align: center;
+  display: block;
   padding-bottom: 6px;
 }
 .help-footer h4::after {
   content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
+  display: block;
   width: 32px;
   height: 2px;
+  margin: 6px auto 0;
   background: var(--rd-gold);
   border-radius: 2px;
 }

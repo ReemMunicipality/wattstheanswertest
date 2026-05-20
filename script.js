@@ -1615,7 +1615,7 @@ function useFiftyFifty() {
     if (fiftyFiftyUsed || !gameActive) return;
     playSound(clickSound);
     fiftyFiftyUsed = true;
-    markHelplineUsed(fiftyFiftyBtn, 'assets/icons/helpline-elimination-used.svg');
+    markHelplineUsed(fiftyFiftyBtn, 'assets/icons/helpline-elimination.svg');
 
     const options = document.querySelectorAll('.option');
     let wrongOptions = [];
@@ -1638,7 +1638,7 @@ function useAddTime() {
     if (addTimeUsed || !gameActive) return;
     playSound(clickSound);
     addTimeUsed = true;
-    markHelplineUsed(addTimeBtn, 'assets/icons/helpline-add-time-used.svg');
+    markHelplineUsed(addTimeBtn, 'assets/icons/helpline-add-time.svg');
 
     // Add 30 seconds to the current timer
     currentQuestionTimeLeft += 30;
@@ -1655,7 +1655,7 @@ function useSkipQuestion() {
     if (skipQuestionUsed || !gameActive) return;
     playSound(clickSound);
     skipQuestionUsed = true;
-    markHelplineUsed(skipQuestionBtn, 'assets/icons/helpline-skip-used.svg');
+    markHelplineUsed(skipQuestionBtn, 'assets/icons/helpline-skip.svg');
     stopQuestionTimer();
 
     // Skip to next question without affecting prize level
@@ -1848,9 +1848,9 @@ function resetGameState() {
         const img = btn?.querySelector('img.lifeline-icon');
         if (img) img.setAttribute('src', src);
     };
-    restore(fiftyFiftyBtn, 'assets/icons/helpline-elimination.svg');
-    restore(addTimeBtn, 'assets/icons/helpline-add-time.svg');
-    restore(skipQuestionBtn, 'assets/icons/helpline-skip.svg');
+    restore(fiftyFiftyBtn, 'assets/icons/helpline-elimination-used.svg');
+    restore(addTimeBtn, 'assets/icons/helpline-add-time-used.svg');
+    restore(skipQuestionBtn, 'assets/icons/helpline-skip-used.svg');
 
     // Reset progress bar
     if (progressBar) {

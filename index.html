@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc29" />
+  <link rel="stylesheet" href="style.css?v=fc31" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -89,49 +89,70 @@
     <div class="help-content">
 
       <div class="help-section">
-        <h3>The Goal</h3>
-        <p>Test your knowledge of sustainability and energy to climb the ladder. Answer 20 questions to maximise your winnings and aim for the grand prize of 1,000,000 Points!</p>
+        <h3>🎯 The Goal</h3>
+        <p>Answer all questions correctly for a chance to win the grand prize of 1,000,000 points.</p>
       </div>
 
       <div class="help-section">
-        <h3>How it Works</h3>
-        <h4>20 Questions:</h4>
-        <p>Each game includes 20 questions. You will answer all 20 regardless of whether your answers are correct or incorrect.</p>
-        <h4>Climb the Ladder:</h4>
-        <p>Correct answers move you UP the ladder. Wrong answers keep you at the same level - you won't fall back!</p>
-        <h4>Beat the Clock:</h4>
-        <p>You have 30 seconds to answer each question. If the timer runs out, it counts as a wrong answer!</p>
+        <h3>🎮 How It Works</h3>
+        <p>You will face 20 questions in each game and progress through all of them.</p>
+        <ul class="help-list">
+          <li>You move through all questions in order</li>
+          <li>The challenge continues until all 20 are attempted</li>
+        </ul>
       </div>
 
       <div class="help-section">
-        <h3>Difficulty by Level</h3>
-        <p>Your prize level determines the question difficulty! Levels 0-7 feature EASY questions, 8-14 feature MEDIUM questions, and 15-20 feature HARD questions. Keep winning to face harder questions!</p>
+        <h3>🪜 Climb the Ladder</h3>
+        <ul class="help-list">
+          <li>Correct answers move you up the ladder</li>
+          <li>Wrong answers keep you at the same level</li>
+          <li>You will not lose progress or move backward</li>
+        </ul>
       </div>
 
       <div class="help-section">
-        <h3>Helplines</h3>
-        <p>You get one of each helpline per game. Use them wisely!</p>
-        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-elimination-used.svg" alt="Elimination icon" />Elimination:</h4>
-        <p>Removes one random incorrect answer to improve your odds.</p>
-        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-add-time-used.svg" alt="Add Time icon" />Add Time:</h4>
-        <p>Adds an extra 30 seconds to the clock when you need more time to think.</p>
-        <h4 class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-skip-used.svg" alt="Skip icon" />Skip Question:</h4>
-        <p>Skips the current question and moves you to the next one without losing progress.</p>
+        <h3>⏱ Beat the Clock</h3>
+        <ul class="help-list">
+          <li>You have 30 seconds per question</li>
+          <li>If time runs out, it counts as a wrong answer</li>
+        </ul>
       </div>
 
       <div class="help-section">
-        <h3>Winning &amp; Glory</h3>
-        <p>After your game ends, you can:</p>
-        <h4>Download a Certificate:</h4>
-        <p>Receive a personalized certificate to celebrate the number of Points you've won.</p>
-        <h4>Join the Leaderboard:</h4>
-        <p>If your score ranks in the Top 15, you can add your initials to the leaderboard for everyone to see! Your total time is used as a tiebreaker, so answer quickly and accurately!</p>
+        <h3>📊 Difficulty by Level</h3>
+        <p>Difficulty increases as you progress:</p>
+        <ul class="help-list">
+          <li>Questions 1–8 → Easy</li>
+          <li>Questions 9–15 → Medium</li>
+          <li>Questions 16–20 → Hard</li>
+        </ul>
+        <p>Keep answering correctly to unlock harder levels.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>🧩 Helplines</h3>
+        <p>Each game includes one use per helpline. Use them wisely:</p>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-elimination-used.svg" alt="Elimination icon" /><span><strong>Elimination</strong> – removes one wrong option</span></div>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-add-time-used.svg" alt="Add Time icon" /><span><strong>Add Time</strong> – adds +30 seconds</span></div>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-skip-used.svg" alt="Skip icon" /><span><strong>Skip Question</strong> – moves to next question with no penalty</span></div>
+      </div>
+
+      <div class="help-section">
+        <h3>🏆 Winning &amp; Glory</h3>
+        <p>After the game, you can:</p>
+        <ul class="help-list">
+          <li>Download a personalised certificate based on your score</li>
+          <li>Join the leaderboard if you're in the Top 15</li>
+          <li>Tiebreaker is based on total time (faster = better rank)</li>
+        </ul>
       </div>
 
       <div class="help-footer">
-        <h4>Terms &amp; Conditions</h4>
-        <p>This game is intended for educational and entertainment purposes only. Points are a virtual currency within the game and hold no real-world monetary value.</p>
-        <h4>Acknowledgements</h4>
+        <h4>📜 Terms &amp; Conditions</h4>
+        <p>This game is intended for educational and entertainment purposes only.</p>
+        <p>Points have no real-world monetary value.</p>
+        <h4>👏 Acknowledgements</h4>
         <p>Developed by passionate volunteers:</p>
         <p><strong>Adam Ghafur</strong></p>
         <p><strong>Anas Msimir</strong></p>

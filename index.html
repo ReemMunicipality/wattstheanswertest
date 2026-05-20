@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc27" />
+  <link rel="stylesheet" href="style.css?v=fc29" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -76,12 +76,10 @@
           </tbody>
         </table>
       </div>
-      <div class="back-btn-wrap">
-        <button class="modal-button skip-back-btn" id="backToStartBtn" aria-label="Return to main menu" title="Back">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-        </button>
-        <span class="back-btn-label">Back</span>
-      </div>
+      <button class="modal-button skip-back-btn skip-back-btn-wide" id="backToStartBtn" aria-label="Return to main menu" title="Back">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+        <span class="btn-label">Back</span>
+      </button>
     </div>
   </div>
 
@@ -103,8 +101,6 @@
         <p>Correct answers move you UP the ladder. Wrong answers keep you at the same level - you won't fall back!</p>
         <h4>Beat the Clock:</h4>
         <p>You have 30 seconds to answer each question. If the timer runs out, it counts as a wrong answer!</p>
-        <h4>Milestones:</h4>
-        <p>Key milestones at 8,000 Points and 150,000 Points mark your progress!</p>
       </div>
 
       <div class="help-section">
@@ -145,12 +141,10 @@
       </div>
     </div>
     
-    <div class="back-btn-wrap">
-      <button class="modal-button skip-back-btn" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-      </button>
-      <span class="back-btn-label">Back</span>
-    </div>
+    <button class="modal-button skip-back-btn skip-back-btn-wide" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
+      <span class="btn-label">Back</span>
+    </button>
   </div>
 </div>
 

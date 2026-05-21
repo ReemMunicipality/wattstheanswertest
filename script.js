@@ -1674,29 +1674,20 @@ async function showCertificate() {
     nameInput.style.borderColor = 'var(--background-dark)';
     nameInput.value = "";
 
-    // Get certificate modal text elements
-    const certModalTitle = document.querySelector('#certificateModal .main-title');
-    const certModalPresentedText = document.querySelector('#certificateModal .presented-text');
-    const certModalAchievementText = document.querySelector('#certificateModal .achievement-text');
-    
     const finalWinnings = moneyLadder[currentMoneyIndex];
 
-    // CHECK THE SCORE and display the correct certificate text
-    if (finalWinnings.value === 1000000) {
-        // --- Winner's Certificate Text ---
-        certModalTitle.textContent = '🏆 Certificate of Excellence 🏆';
-        certModalPresentedText.textContent = 'This is proudly awarded to';
-        certModalAchievementText.innerHTML = 'for achieving the title of Sustainable Energy Ambassador by winning the "Watt\'s The Answer" challenge and collecting <strong>1,000,000 Points.</strong>';
-        certificateName.textContent = playerName; // Use stored player name
-        certificateAmount.style.display = 'none'; // Hide the old amount field
-    } else {
-        // --- Standard Certificate Text ---
-        certModalTitle.textContent = 'Certificate of Achievement';
-        certModalPresentedText.textContent = 'This certificate is proudly presented to';
-        certModalAchievementText.innerHTML = 'for demonstrating knowledge in sustainable energy by reaching a key milestone in the "Watt\'s The Answer" challenge and collecting';
-        certificateName.textContent = playerName; // Use stored player name
-        certificateAmount.style.display = 'block'; // Ensure the old amount field is visible
-        certificateAmount.innerHTML = `<strong>${finalWinnings.value.toLocaleString()}</strong> Points.`;    }
+    // Fill the dynamic overlays on the SVG certificate template
+    certificateName.textContent = playerName;
+    certificateAmount.textContent = `${finalWinnings.value.toLocaleString()} Points`;
+
+    // Date overlay (DD.MM.YYYY to match the template's placeholder format)
+    const certDateEl = document.getElementById('certificateDate');
+    if (certDateEl) {
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        certDateEl.textContent = `${dd}.${mm}.${today.getFullYear()}`;
+    }
 
     addToLeaderboardBtn.style.display = 'none';
     
@@ -1727,9 +1718,16 @@ async function downloadCertificate() {
         return;
     }
 
+    // Cache the icon-only button's original HTML so we can restore it after.
+    const originalBtnHTML = downloadCertificateBtn.innerHTML;
+    const restoreBtn = () => {
+        downloadCertificateBtn.innerHTML = originalBtnHTML;
+        downloadCertificateBtn.disabled = false;
+    };
+
     try {
-        // Show loading state
-        downloadCertificateBtn.textContent = 'Generating...';
+        // Show loading state (text only — icon will be restored on completion)
+        downloadCertificateBtn.textContent = '…';
         downloadCertificateBtn.disabled = true;
 
         // Generate image from the certificate element
@@ -1754,13 +1752,11 @@ async function downloadCertificate() {
                 if (navigator.canShare(shareData)) {
                     try {
                         await navigator.share(shareData);
-                        downloadCertificateBtn.textContent = 'Download Certificate';
-                        downloadCertificateBtn.disabled = false;
+                        restoreBtn();
                         return;
                     } catch (shareError) {
                         if (shareError.name === 'AbortError') {
-                            downloadCertificateBtn.textContent = 'Download Certificate';
-                            downloadCertificateBtn.disabled = false;
+                            restoreBtn();
                             return;
                         }
                     }
@@ -1819,14 +1815,12 @@ async function downloadCertificate() {
             pdf.save(`${fileName}.pdf`);
         }
 
-        downloadCertificateBtn.textContent = 'Download Certificate';
-        downloadCertificateBtn.disabled = false;
+        restoreBtn();
 
     } catch (error) {
         console.error('Error generating certificate:', error);
         alert('Sorry, there was an error generating the certificate. Please try again.');
-        downloadCertificateBtn.textContent = 'Download Certificate';
-        downloadCertificateBtn.disabled = false;
+        restoreBtn();
     }
 }
 
@@ -1915,15 +1909,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         EXTREME: questionBank.EXTREME.length
     });
 
-    // Set the certificate date dynamically
-    const certificateDateElement = document.getElementById('certificateDate');
-    if (certificateDateElement) {
-        certificateDateElement.textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
+    // Date is set in showCertificate() to match the SVG template format (DD.MM.YYYY)
 
     // Sound toggle functionality — keeps two stacked SVG icons in the button
     // (.sound-on / .sound-off) and switches between them via the .muted class.

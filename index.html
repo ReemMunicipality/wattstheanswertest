@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc32" />
+  <link rel="stylesheet" href="style.css?v=fc40" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -376,32 +376,15 @@
   <div class="modal" id="certificateModal" role="dialog" aria-labelledby="certificateTitle">
     <div class="modal-content">
 
-      <div class="certificate-wrapper" role="img" aria-label="Your achievement certificate">
-        <div class="certificate-content">
-            <div class="certificate-header">
-                <div class="logo-container">
-                    <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" class="certificate-logo">
-                </div>
-            </div>
-
-            <div class="certificate-body">
-                <h2 class="main-title" id="certificateTitle">Certificate of Achievement</h2>
-                <div class="game-title">Watt's The Answer</div>
-                <div class="presented-text">This certificate is awarded to</div>
-
-                <div class="recipient-name" id="certificateName">Player Name</div>
-
-                <div class="achievement-text">
-                    For your excellent achievement in the game, winning a grand total of:
-                </div>
-
-                <div class="winning-amount" id="certificateAmount">0 Points</div>
-            </div>
-
-            <div class="certificate-footer">
-                <span>Date Awarded: <span id="certificateDate"></span></span>
-            </div>
+      <div class="certificate-wrapper certificate-wrapper-v2" role="img" aria-label="Your achievement certificate">
+        <img class="certificate-template" src="assets/certificate-template.svg" alt="" />
+        <div class="cert-name-overlay">
+          <div class="cert-name-mask"></div>
+          <div class="cert-name" id="certificateName">Player Name</div>
         </div>
+        <div class="cert-amount-overlay" id="certificateAmount">0 Points</div>
+        <div class="cert-date-overlay" id="certificateDate"></div>
+        <h2 class="visually-hidden" id="certificateTitle">Certificate of Achievement</h2>
       </div>
 
       <div class="name-input-container" id="nameInputContainer" style="display: none;">
@@ -427,6 +410,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=fc30"></script>
+  <script type="module" src="script.js?v=fc42"></script>
 </body>
 </html>

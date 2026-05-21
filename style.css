@@ -1788,6 +1788,98 @@ body.in-game .footer-logos { display: none !important; }
 /* Hide subtitle-text "by" remnant if anywhere */
 .subtitle-logo-container { display: none; }
 
+/* ---------- Certificate v2 — SVG template + dynamic overlays ---------- */
+#certificateModal .certificate-wrapper-v2 {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #FDF9F6;
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+  flex-shrink: 0;
+}
+#certificateModal .certificate-wrapper-v2::before { content: none !important; }
+#certificateModal .certificate-template {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* "Name" overlay sits exactly over the gold italic 'Name' in the SVG */
+#certificateModal .cert-name-overlay {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56%;
+  height: 7%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#certificateModal .cert-name-mask {
+  position: absolute;
+  inset: 0;
+  background: #FDF9F6;
+}
+#certificateModal .cert-name {
+  position: relative;
+  z-index: 1;
+  font-family: 'Georgia', 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: #E5BA4A;
+  font-size: clamp(28px, 5.2cqi, 76px);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  padding: 0 8px;
+  border: none !important;
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
+/* "1,000 Points." amount overlay */
+#certificateModal .cert-amount-overlay {
+  position: absolute;
+  top: 81%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #FDF9F6;
+  color: #E5BA4A !important;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 2.5cqi, 36px);
+  text-align: center;
+  white-space: nowrap;
+  padding: 8px 24px;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+/* Date overlay at the bottom */
+#certificateModal .cert-date-overlay {
+  position: absolute;
+  top: 91%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #FDF9F6;
+  color: #003366;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 1.4cqi, 18px);
+  text-align: center;
+  white-space: nowrap;
+  padding: 5px 18px;
+  letter-spacing: 0.6px;
+}
+
+/* Use container query units so the overlay text scales with the certificate width */
+#certificateModal .certificate-wrapper-v2 { container-type: inline-size; }
+
 /* Result modal styling tweak to fit theme */
 #resultModal .modal-content {
   border-radius: 22px !important;

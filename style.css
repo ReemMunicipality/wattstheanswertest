@@ -1832,7 +1832,7 @@ body.in-game .footer-logos { display: none !important; }
   font-style: italic;
   font-weight: 400;
   color: #E5BA4A;
-  font-size: clamp(28px, 5.2cqi, 76px);
+  font-size: 56px; /* overridden in JS proportional to the certificate width */
   line-height: 1;
   text-align: center;
   white-space: nowrap;
@@ -1852,7 +1852,7 @@ body.in-game .footer-logos { display: none !important; }
   color: #E5BA4A !important;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: clamp(18px, 2.5cqi, 36px);
+  font-size: 28px; /* overridden in JS proportional to the certificate width */
   text-align: center;
   white-space: nowrap;
   padding: 8px 24px;
@@ -1870,15 +1870,13 @@ body.in-game .footer-logos { display: none !important; }
   color: #003366;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: clamp(11px, 1.4cqi, 18px);
+  font-size: 15px; /* overridden in JS proportional to the certificate width */
   text-align: center;
   white-space: nowrap;
   padding: 5px 18px;
   letter-spacing: 0.6px;
 }
 
-/* Use container query units so the overlay text scales with the certificate width */
-#certificateModal .certificate-wrapper-v2 { container-type: inline-size; }
 
 /* Result modal styling tweak to fit theme */
 #resultModal .modal-content {

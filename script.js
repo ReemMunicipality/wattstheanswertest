@@ -1323,11 +1323,12 @@ async function showLeaderboard() {
         let rank = 1;
         data.forEach(entry => {
             const row = document.createElement('tr');
+            const amountText = String(entry.amount).trim().replace(/\.*$/, '') + '.';
             row.innerHTML = `
                 <td>${rank}.</td>
                 <td>${entry.name}</td>
                 <td>${entry.time}s</td>
-                <td>${entry.amount}</td>
+                <td>${amountText}</td>
             `;
             leaderboardTableBody.appendChild(row);
             rank++;
@@ -1664,6 +1665,23 @@ function useSkipQuestion() {
     showQuestion();
 }
 
+// Size the certificate overlay text proportionally to the rendered certificate
+// width. Avoids container-query units (cqi) so it works on every iPad/browser.
+function sizeCertificateOverlays() {
+    const wrap = document.querySelector('#certificateModal .certificate-wrapper-v2');
+    if (!wrap) return;
+    const w = wrap.getBoundingClientRect().width;
+    if (!w) return;
+    const clamp = (min, val, max) => Math.max(min, Math.min(val, max));
+    const name = document.querySelector('#certificateModal .cert-name');
+    const amount = document.querySelector('#certificateModal .cert-amount-overlay');
+    const date = document.querySelector('#certificateModal .cert-date-overlay');
+    if (name) name.style.fontSize = clamp(28, w * 0.052, 76) + 'px';
+    if (amount) amount.style.fontSize = clamp(16, w * 0.025, 36) + 'px';
+    if (date) date.style.fontSize = clamp(10, w * 0.014, 18) + 'px';
+}
+window.addEventListener('resize', sizeCertificateOverlays);
+
 async function showCertificate() {
     stopQuestionTimer();
     
@@ -1701,6 +1719,9 @@ async function showCertificate() {
     certificateModal.classList.add('active');
     document.body.classList.remove('in-game');
     videoController.playOutro();
+
+    // Size the overlay text once the modal is visible and laid out.
+    requestAnimationFrame(sizeCertificateOverlays);
 }
 
 // Detect if user is on mobile device
@@ -1730,12 +1751,24 @@ async function downloadCertificate() {
         downloadCertificateBtn.textContent = '…';
         downloadCertificateBtn.disabled = true;
 
-        // Generate image from the certificate element
+        // html2canvas doesn't evaluate container-query units (cqi) or clamp(),
+        // so bake the live computed font-size of each overlay into the cloned DOM
+        // as concrete px. Otherwise the downloaded image's text is mis-sized/scrambled.
+        const overlaySelectors = ['.cert-name', '.cert-amount-overlay', '.cert-date-overlay'];
         const canvas = await html2canvas(certificateWrapper, {
             scale: 2, // Higher quality
             useCORS: true,
             backgroundColor: '#ffffff',
-            logging: false
+            logging: false,
+            onclone: (clonedDoc) => {
+                overlaySelectors.forEach(sel => {
+                    const live = certificateWrapper.querySelector(sel);
+                    const clone = clonedDoc.querySelector(`#certificateModal ${sel}`) || clonedDoc.querySelector(sel);
+                    if (live && clone) {
+                        clone.style.fontSize = getComputedStyle(live).fontSize;
+                    }
+                });
+            }
         });
 
         const fileName = `MissionCleanEnergy_Certificate_${playerName.replace(/\s+/g, '_')}`;
@@ -2031,7 +2064,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    playAgainBtn.addEventListener('click', resetGame);
+    playAgainBtn.addEventListener('click', () => {
+        certificateModal.classList.remove('active');
+        endGame();
+    });
     resultButton.addEventListener('click', continueGameAfterAnswer);
     
     fiftyFiftyBtn.addEventListener('click', useFiftyFifty);

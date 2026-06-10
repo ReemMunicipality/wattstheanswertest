@@ -1515,12 +1515,16 @@ function showQuestion() {
 
 function selectAnswer(selectedIndex) {
     if (!gameActive) return;
+    // Lock the question immediately so a second selection (rapid double-tap,
+    // click-then-Enter on the focused option, or key-mash) can't run this again
+    // and double-advance the prize ladder.
+    gameActive = false;
     stopQuestionTimer();
     playSound(clickSound);
-    
+
     const timeTaken = QUESTION_TIME_LIMIT - currentQuestionTimeLeft;
     totalGameTime += timeTaken;
-    
+
     const options = document.querySelectorAll('.option');
     options.forEach(option => option.style.pointerEvents = 'none');
     options[selectedIndex].style.background = 'linear-gradient(135deg, #f67d21ff, #efab23ff)';

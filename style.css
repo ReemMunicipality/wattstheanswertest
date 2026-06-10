@@ -803,11 +803,9 @@ body {
   }
 
   .certificate-buttons {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .certificate-buttons .modal-button {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
   }
 }
@@ -2647,4 +2645,43 @@ body.in-game .footer-logos { display: none !important; }
   .level-zone-easy .level-bar-wrap { width: 94px; }
   .level-zone-medium .level-bar-wrap { width: 82px; }
   .level-zone-hard .level-bar-wrap { width: 70px; }
+}
+
+/* --- Rotate-to-portrait prompt (small landscape screens only) --- */
+.rotate-prompt { display: none; }
+@media (orientation: landscape) and (max-height: 500px) {
+  .rotate-prompt {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--rd-navy);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .rotate-prompt-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #fff;
+    max-width: 360px;
+  }
+  .rotate-prompt-inner svg {
+    width: 64px;
+    height: 64px;
+    color: var(--rd-gold);
+    animation: rotateHint 2.4s ease-in-out infinite;
+  }
+  .rotate-prompt-inner p {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  @keyframes rotateHint {
+    0%, 40% { transform: rotate(0deg); }
+    60%, 100% { transform: rotate(-90deg); }
+  }
 }

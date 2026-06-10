@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc43" />
+  <link rel="stylesheet" href="style.css?v=fc46" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -18,6 +18,17 @@
   <video class="bg-video" id="bgVideo" autoplay muted playsinline preload="auto">
     <source src="assets/bg-city.mp4?v=hq1" type="video/mp4">
   </video>
+  <!-- Shown only on small landscape screens (phones); iPad landscape is unaffected -->
+  <div class="rotate-prompt" aria-hidden="true">
+    <div class="rotate-prompt-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <rect x="7" y="2.5" width="10" height="19" rx="2"/>
+        <path d="M3 14 a6 6 0 0 1 6 -6" stroke-linecap="round"/>
+        <path d="M9 5 L9 8 L6 8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p>Please rotate your device to portrait to play.</p>
+    </div>
+  </div>
   <div class="top-toggles">
     <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">
       <svg class="sound-on" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

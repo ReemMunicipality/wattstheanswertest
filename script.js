@@ -1218,6 +1218,7 @@ function getQuestionForCurrentLevel() {
 // --- Global Game State & DOM Element References ---
 let availableQuestions, currentQuestion, currentQuestionIndex, currentMoneyIndex, fiftyFiftyUsed, addTimeUsed, skipQuestionUsed, gameActive, countdownInterval, isTimerModalActive, totalGameTime;
 let questionTimerInterval;
+let questionLive = false; // true only while a question is actively answerable
 const QUESTION_TIME_LIMIT = 30;
 let currentQuestionTimeLeft = QUESTION_TIME_LIMIT;
 
@@ -1380,6 +1381,7 @@ function initGame() {
 
 function stopQuestionTimer() {
     clearInterval(questionTimerInterval);
+    questionLive = false;
 }
 
 function applyTimerColor(seconds) {
@@ -1418,7 +1420,39 @@ function startQuestionTimer() {
         questionTimerElement.style.visibility = 'visible';
         applyTimerColor(currentQuestionTimeLeft);
     }
+    questionLive = true;
     resumeQuestionTimer();
+}
+
+// Anti-cheat: leaving the tab during a live question forfeits it immediately,
+// so switching away to look up an answer is pointless and behaves the same for everyone.
+function handleTabHidden() {
+    if (!questionLive || !gameActive) return;
+    if (document.visibilityState !== 'hidden') return;
+    forfeitQuestionForLeaving();
+}
+
+function forfeitQuestionForLeaving() {
+    stopQuestionTimer();
+    playSound(wrongSound);
+    gameActive = false;
+    totalGameTime += QUESTION_TIME_LIMIT;
+    updateMoneyLadder();
+
+    resultTitle.textContent = "Question Skipped";
+    let message = `You left the game, so this question was marked incorrect.<br>The correct answer was: ${currentQuestion.options[currentQuestion.correct]}.`;
+    if (currentQuestion.fact) {
+        message += `<hr style="margin: 1rem 0;"><strong>Fun Fact:</strong><br><em>${currentQuestion.fact}</em>`;
+    }
+    resultMessage.innerHTML = message;
+    updateResultQuestionsLeft();
+
+    const options = document.querySelectorAll('.option');
+    if (currentQuestion && options.length > currentQuestion.correct) {
+        options[currentQuestion.correct].style.background = 'linear-gradient(135deg, #0a6a0a, #0a8a0a)';
+    }
+    resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
+    resultModal.classList.add('active');
 }
 
 function showQuestion() {
@@ -1943,6 +1977,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Date is set in showCertificate() to match the SVG template format (DD.MM.YYYY)
+
+    // Anti-cheat: forfeit the current question if the player switches away from the tab.
+    document.addEventListener('visibilitychange', handleTabHidden);
 
     // Sound toggle functionality — keeps two stacked SVG icons in the button
     // (.sound-on / .sound-off) and switches between them via the .muted class.

@@ -1,3 +1,97 @@
+// Bilingual (English / Arabic) support
+import { I18N, HTML_KEYS } from './i18n.js?v=fc49';
+
+let currentLang = localStorage.getItem('lang') || 'en';
+
+// Translate a key for the active language, with {placeholder} substitution.
+// Falls back to English, then to the raw key.
+function t(key, vars) {
+    const table = I18N[currentLang] || I18N.en;
+    let str = (table && table[key] != null) ? table[key] : (I18N.en[key] != null ? I18N.en[key] : key);
+    if (vars) {
+        for (const k in vars) str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+    }
+    return str;
+}
+
+// Apply all static translations across the DOM (text + attributes).
+function applyStaticI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (HTML_KEYS.has(key)) el.innerHTML = t(key);
+        else el.textContent = t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+        el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+    });
+}
+
+// Format a points value with the localized unit, keeping Western numerals.
+function formatPoints(value) {
+    return `${Number(value).toLocaleString('en-US')} ${t('points')}`;
+}
+
+// Localized "<DIFFICULTY> MODE" label.
+function modeLabel(difficulty) {
+    const map = { EASY: 'mode_easy', MEDIUM: 'mode_medium', HARD: 'mode_hard', EXTREME: 'mode_hard' };
+    return t(map[difficulty] || 'mode_easy');
+}
+
+// Localized accessors for a bilingual question object.
+function qText(q) { return (q && q.question && (q.question[currentLang] || q.question.en)) || ''; }
+function qOptions(q) { return (q && q.options && (q.options[currentLang] || q.options.en)) || []; }
+function qFact(q) { return (q && q.fact && (q.fact[currentLang] || q.fact.en)) || ''; }
+
+// Switch the whole UI to a language and persist the choice.
+function setLanguage(lang) {
+    if (lang !== 'en' && lang !== 'ar') lang = 'en';
+    currentLang = lang;
+    try { localStorage.setItem('lang', lang); } catch (e) {}
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    document.body.classList.toggle('rtl', lang === 'ar');
+    applyStaticI18n();
+    updateLanguageControls();
+    // Re-render any language-dependent dynamic content that is currently visible.
+    try { refreshDynamicLanguage(); } catch (e) {}
+}
+
+// Reflect the active language on the picker / toggle controls.
+function updateLanguageControls() {
+    const enBtn = document.getElementById('langEnBtn');
+    const arBtn = document.getElementById('langArBtn');
+    if (enBtn) enBtn.classList.toggle('active', currentLang === 'en');
+    if (arBtn) arBtn.classList.toggle('active', currentLang === 'ar');
+    const toggleText = document.querySelector('#langToggle .lang-toggle-text');
+    if (toggleText) toggleText.textContent = (currentLang === 'en') ? 'ع' : 'EN';
+}
+
+// Re-render visible dynamic strings after a language switch.
+function refreshDynamicLanguage() {
+    // Current question, options and counters (only if a game is on screen)
+    if (typeof currentQuestion !== 'undefined' && currentQuestion) {
+        const qEl = document.getElementById('question');
+        if (qEl) qEl.textContent = qText(currentQuestion);
+        const optEls = document.querySelectorAll('#options .option');
+        const opts = qOptions(currentQuestion);
+        const letters = ['A', 'B', 'C', 'D'];
+        optEls.forEach((el, i) => {
+            const txt = el.querySelector('.option-text');
+            if (txt && opts[i] != null) txt.textContent = opts[i];
+            el.setAttribute('aria-label', `Option ${letters[i]}: ${opts[i] != null ? opts[i] : ''}`);
+        });
+        // Points pill, counter and prize ladder carry a localized unit ("Points"/"نقطة")
+        if (typeof updateProgressBar === 'function') { try { updateProgressBar(); } catch (e) {} }
+        if (typeof updateMoneyLadder === 'function') { try { updateMoneyLadder(); } catch (e) {} }
+    }
+}
+
 // Leaderboard backend — Cloudflare Worker + D1 SQLite
 const LEADERBOARD_API = 'https://wattstheanswer-api.eer-3ff.workers.dev';
 
@@ -257,18 +351,20 @@ async function loadQuestionsFromFile() {
                 const difficulty = (row['Difficulty'] || '').toUpperCase().trim();
                 if (!questionBank[difficulty]) return; // Skip invalid difficulties
 
-                // Build options array, filtering out empty options for True/False
-                // Use ?? to handle null/undefined while preserving 0 as valid answer
-                const options = [];
-                const optA = (row['Option A'] ?? '').toString().trim();
-                const optB = (row['Option B'] ?? '').toString().trim();
-                const optC = (row['Option C'] ?? '').toString().trim();
-                const optD = (row['Option D'] ?? '').toString().trim();
-
-                if (optA !== '') options.push(optA);
-                if (optB !== '') options.push(optB);
-                if (optC !== '') options.push(optC);
-                if (optD !== '') options.push(optD);
+                // Build EN + AR option arrays in lockstep so the `correct` index
+                // stays valid in both languages. Inclusion is decided by the EN cell.
+                // Use ?? to handle null/undefined while preserving 0 as valid answer.
+                const optionsEn = [];
+                const optionsAr = [];
+                const cols = ['Option A', 'Option B', 'Option C', 'Option D'];
+                cols.forEach(col => {
+                    const en = (row[col] ?? '').toString().trim();
+                    const ar = (row[col + '_AR'] ?? '').toString().trim();
+                    if (en !== '') {
+                        optionsEn.push(en);
+                        optionsAr.push(ar !== '' ? ar : en); // fall back to EN if AR missing
+                    }
+                });
 
                 // Parse correct answer - handle both letter (A,B,C,D) and number (0,1,2,3) formats
                 let correctAnswer = row['Correct Answer'] || '0';
@@ -281,15 +377,20 @@ async function loadQuestionsFromFile() {
                     else correctAnswer = parseInt(correctAnswer) || 0;
                 }
 
+                const questionEn = (row['Question'] || '').toString().trim();
+                const questionAr = (row['Question_AR'] || '').toString().trim();
+                const factEn = (row['Fun Fact'] || '').toString().trim();
+                const factAr = (row['Fun Fact_AR'] || '').toString().trim();
+
                 const question = {
-                    question: row['Question'] || '',
-                    options: options,
+                    question: { en: questionEn, ar: questionAr || questionEn },
+                    options: { en: optionsEn, ar: optionsAr },
                     correct: correctAnswer,
-                    fact: row['Fun Fact'] || ''
+                    fact: { en: factEn, ar: factAr || factEn }
                 };
 
                 // Only add valid questions
-                if (question.question && options.length >= 2) {
+                if (questionEn && optionsEn.length >= 2) {
                     questionBank[difficulty].push(question);
                 }
             });
@@ -308,9 +409,24 @@ async function loadQuestionsFromFile() {
 
     // If we get here, fall back to default questions
     console.log('Loading default questions...');
-    questionBank = JSON.parse(JSON.stringify(defaultQuestionBank));
+    questionBank = normalizeMonolingualBank(JSON.parse(JSON.stringify(defaultQuestionBank)));
     questionsLoaded = true;
     return false;
+}
+
+// Convert the monolingual fallback bank ({question, options[], correct, fact})
+// into the bilingual shape used everywhere else (Arabic mirrors English).
+function normalizeMonolingualBank(bank) {
+    const out = {};
+    for (const diff in bank) {
+        out[diff] = (bank[diff] || []).map(q => ({
+            question: { en: q.question, ar: q.question },
+            options: { en: q.options.slice(), ar: q.options.slice() },
+            correct: q.correct,
+            fact: { en: q.fact || '', ar: q.fact || '' }
+        }));
+    }
+    return out;
 }
 
 // Default Question Bank (fallback if Excel/CSV fails to load)
@@ -955,7 +1071,7 @@ function updateProgressBar() {
     const idx = currentMoneyIndex;
     const pointsPill = document.getElementById('pointsPill');
     if (pointsPill && moneyLadder[idx]) {
-        pointsPill.textContent = moneyLadder[idx].amount;
+        pointsPill.textContent = formatPoints(moneyLadder[idx].value);
         pointsPill.classList.toggle('earned', moneyLadder[idx].value > 0);
     }
 
@@ -1034,7 +1150,7 @@ function showZoneNotification(difficulty) {
 
     // Set content and styling
     zoneNotification.querySelector('.zone-icon').textContent = icon;
-    zoneNotification.querySelector('.zone-text').textContent = difficulty + ' MODE';
+    zoneNotification.querySelector('.zone-text').textContent = modeLabel(difficulty);
     zoneNotification.className = 'zone-notification ' + diffLower;
 
     // Show notification
@@ -1088,7 +1204,8 @@ function saveQuestionCooldowns(cooldowns) {
 function getQuestionId(question) {
     // Use a simple hash of the question text
     let hash = 0;
-    const str = question.question;
+    // Always hash the English text so a question's ID is stable across languages.
+    const str = (question.question && question.question.en) || question.question || '';
     for (let i = 0; i < str.length; i++) {
         const char = str.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
@@ -1309,7 +1426,7 @@ async function showLeaderboard() {
     startScreen.classList.remove('active');
     certificateModal.classList.remove('active');
     leaderboardModal.classList.add('active');
-    leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">Loading scores...</td></tr>';
+    leaderboardTableBody.innerHTML = `<tr class="lb-empty"><td colspan="4">${t('lb_loading')}</td></tr>`;
 
     try {
         const data = await leaderboardApi.list();
@@ -1317,7 +1434,7 @@ async function showLeaderboard() {
         leaderboardTableBody.innerHTML = '';
 
         if (!data || data.length === 0) {
-            leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">No scores yet. Be the first!</td></tr>';
+            leaderboardTableBody.innerHTML = `<tr class="lb-empty"><td colspan="4">${t('lb_empty')}</td></tr>`;
             return;
         }
 
@@ -1337,7 +1454,7 @@ async function showLeaderboard() {
 
     } catch (error) {
         console.error("Error getting leaderboard: ", error);
-        leaderboardTableBody.innerHTML = '<tr class="lb-empty"><td colspan="4">Could not load scores. Please try again.</td></tr>';
+        leaderboardTableBody.innerHTML = `<tr class="lb-empty"><td colspan="4">${t('lb_error')}</td></tr>`;
     }
 }
 
@@ -1439,10 +1556,11 @@ function forfeitQuestionForLeaving() {
     totalGameTime += QUESTION_TIME_LIMIT;
     updateMoneyLadder();
 
-    resultTitle.textContent = "Question Skipped";
-    let message = `You left the game, so this question was marked incorrect.<br>The correct answer was: ${currentQuestion.options[currentQuestion.correct]}.`;
-    if (currentQuestion.fact) {
-        message += `<hr style="margin: 1rem 0;"><strong>Fun Fact:</strong><br><em>${currentQuestion.fact}</em>`;
+    resultTitle.textContent = t('skipped_title');
+    let message = `${t('left_game_msg')}<br>${t('correct_answer_was', { ans: qOptions(currentQuestion)[currentQuestion.correct] })}`;
+    const skipFact = qFact(currentQuestion);
+    if (skipFact) {
+        message += `<hr style="margin: 1rem 0;"><strong>${t('fun_fact')}</strong><br><em>${skipFact}</em>`;
     }
     resultMessage.innerHTML = message;
     updateResultQuestionsLeft();
@@ -1451,7 +1569,7 @@ function forfeitQuestionForLeaving() {
     if (currentQuestion && options.length > currentQuestion.correct) {
         options[currentQuestion.correct].style.background = 'linear-gradient(135deg, #0a6a0a, #0a8a0a)';
     }
-    resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
+    resultButton.innerHTML = `<span class="btn-label">${t('next_question')}</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>`;
     resultModal.classList.add('active');
 }
 
@@ -1480,7 +1598,7 @@ function showQuestion() {
     const questionNumber = currentQuestionIndex + 1;
     const difficultyIcon = getDifficultyIcon(difficulty);
 
-    questionElement.textContent = currentQuestion.question;
+    questionElement.textContent = qText(currentQuestion);
     if (levelIndicator) {
         const stars = difficulty === 'EASY' ? '★' : difficulty === 'MEDIUM' ? '★★' : '★★★';
         levelIndicator.textContent = stars;
@@ -1493,7 +1611,7 @@ function showQuestion() {
 
     optionsElement.innerHTML = '';
     const letters = ['A', 'B', 'C', 'D'];
-    currentQuestion.options.forEach((option, index) => {
+    qOptions(currentQuestion).forEach((option, index) => {
         const optionElement = document.createElement('div');
         optionElement.className = 'option';
         optionElement.setAttribute('tabindex', '0');
@@ -1536,20 +1654,21 @@ function selectAnswer(selectedIndex) {
             options[selectedIndex].style.background = 'linear-gradient(135deg, #0a6a0a, #0a8a0a)';
             playSound(correctSound);
             currentMoneyIndex = Math.min(moneyLadder.length - 1, currentMoneyIndex + 1);
-            resultTitle.textContent = "Correct!";
+            resultTitle.textContent = t('correct_title');
             // Format "Correct" message
-            message = `Congratulations!<br>You have won <strong>${moneyLadder[currentMoneyIndex].amount}</strong>.`;
+            message = `${t('congrats')}<br>${t('you_won', { amount: `<strong>${formatPoints(moneyLadder[currentMoneyIndex].value)}</strong>` })}`;
         } else {
             playSound(wrongSound);
             // Wrong answer: stay at current level (no movement down)
-            resultTitle.textContent = "Incorrect!";
+            resultTitle.textContent = t('incorrect_title');
             // Format "Incorrect" message
-            message = `<br>The correct answer was: ${currentQuestion.options[currentQuestion.correct]}.`;
+            message = `<br>${t('correct_answer_was', { ans: qOptions(currentQuestion)[currentQuestion.correct] })}`;
         }
-        
+
         // Append fun fact if it exists
-        if (currentQuestion.fact) {
-            message += `<hr style="margin: 1rem 0;"><strong>Fun Fact:</strong><br><em>${currentQuestion.fact}</em>`;
+        const answerFact = qFact(currentQuestion);
+        if (answerFact) {
+            message += `<hr style="margin: 1rem 0;"><strong>${t('fun_fact')}</strong><br><em>${answerFact}</em>`;
         }
         
         // Use innerHTML to render formatted message
@@ -1557,7 +1676,7 @@ function selectAnswer(selectedIndex) {
         updateResultQuestionsLeft();
 
         updateMoneyLadder();
-        resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
+        resultButton.innerHTML = `<span class="btn-label">${t('next_question')}</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>`;
         resultModal.classList.add('active');
         gameActive = false;
     }, 1000);
@@ -1569,8 +1688,8 @@ function updateResultQuestionsLeft() {
     const answered = Math.min(currentQuestionIndex + 1, TOTAL_QUESTIONS);
     const remaining = Math.max(0, TOTAL_QUESTIONS - answered);
     el.textContent = remaining === 1
-        ? '1 question left'
-        : `${remaining} questions left`;
+        ? t('one_q_left')
+        : t('n_q_left', { n: remaining });
 }
 
 function handleTimeout() {
@@ -1583,13 +1702,14 @@ function handleTimeout() {
     // Timeout: stay at current level (no movement down)
     updateMoneyLadder();
 
-    resultTitle.textContent = "Time's Up!";
-    
-    let message = `The correct answer was: ${currentQuestion.options[currentQuestion.correct]}.`;
+    resultTitle.textContent = t('timesup_title');
+
+    let message = t('correct_answer_was', { ans: qOptions(currentQuestion)[currentQuestion.correct] });
 
     // Append fun fact if it exists
-    if (currentQuestion.fact) {
-        message += `<hr style="margin: 1rem 0;"><strong>Fun Fact:</strong><br><em>${currentQuestion.fact}</em>`;
+    const timeoutFact = qFact(currentQuestion);
+    if (timeoutFact) {
+        message += `<hr style="margin: 1rem 0;"><strong>${t('fun_fact')}</strong><br><em>${timeoutFact}</em>`;
     }
 
     // Use innerHTML to render formatted message
@@ -1600,7 +1720,7 @@ function handleTimeout() {
     if (currentQuestion && options.length > currentQuestion.correct) {
        options[currentQuestion.correct].style.background = 'linear-gradient(135deg, #0a6a0a, #0a8a0a)';
     }
-    resultButton.innerHTML = '<span class="btn-label">Next Question</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>';
+    resultButton.innerHTML = `<span class="btn-label">${t('next_question')}</span><svg class="btn-skip-fwd" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6 L14 12 L6 18 Z"/><rect x="15" y="6" width="2" height="12"/></svg>`;
     resultModal.classList.add('active');
 }
 
@@ -1615,7 +1735,7 @@ function updateMoneyLadder() {
     moneyLadder.forEach((level, index) => {
         const levelElement = document.createElement('div');
         levelElement.className = 'money-level';
-        levelElement.textContent = level.amount;
+        levelElement.textContent = formatPoints(level.value);
 
         // Add difficulty zone class based on level index
         if (index <= 7) {
@@ -1734,7 +1854,7 @@ async function showCertificate() {
 
     // Fill the dynamic overlays on the SVG certificate template
     certificateName.textContent = playerName;
-    certificateAmount.textContent = `${finalWinnings.value.toLocaleString()} Points`;
+    certificateAmount.textContent = formatPoints(finalWinnings.value);
 
     // Date overlay (DD.MM.YYYY to match the template's placeholder format)
     const certDateEl = document.getElementById('certificateDate');
@@ -1773,7 +1893,7 @@ async function downloadCertificate() {
     const certificateWrapper = document.querySelector('#certificateModal .certificate-wrapper');
 
     if (!certificateWrapper) {
-        alert('Sorry, there was an error generating the certificate.');
+        alert(t('cert_error'));
         return;
     }
 
@@ -1890,7 +2010,7 @@ async function downloadCertificate() {
 
     } catch (error) {
         console.error('Error generating certificate:', error);
-        alert('Sorry, there was an error generating the certificate. Please try again.');
+        alert(t('cert_error_retry'));
         restoreBtn();
     }
 }
@@ -1962,6 +2082,27 @@ function endGame() {
 document.addEventListener('DOMContentLoaded', async () => {
     let nameInputMode = null; // Can be 'leaderboard' or 'certificate'
 
+    // --- Language gate: choose language first, then reveal the start screen ---
+    // Apply the current (default/saved) language so all UI is pre-translated.
+    setLanguage(currentLang);
+
+    function chooseLanguage(lang) {
+        setLanguage(lang);
+        const gate = document.getElementById('languageGate');
+        if (gate) gate.classList.remove('active');
+        document.body.classList.remove('gate-open');
+        startScreen.classList.add('active');
+    }
+
+    const gateEnBtn = document.getElementById('gateEnBtn');
+    const gateArBtn = document.getElementById('gateArBtn');
+    if (gateEnBtn) gateEnBtn.addEventListener('click', () => chooseLanguage('en'));
+    if (gateArBtn) gateArBtn.addEventListener('click', () => chooseLanguage('ar'));
+
+    // In-game toggle: flip language live and keep the choice.
+    const langToggle = document.getElementById('langToggle');
+    if (langToggle) langToggle.addEventListener('click', () => setLanguage(currentLang === 'en' ? 'ar' : 'en'));
+
     // Load questions from Excel/CSV file
     startGameBtn.disabled = true;
     startGameBtn.classList.add('loading');
@@ -1991,7 +2132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         isMuted = !isMuted;
         soundToggle.classList.toggle('muted', isMuted);
         soundToggle.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
-        soundToggle.setAttribute('aria-label', isMuted ? 'Sound is off' : 'Sound is on');
+        soundToggle.setAttribute('aria-label', isMuted ? t('aria_sound_off') : t('aria_sound_on'));
     });
 
     helpBtn.addEventListener('click', () => {
@@ -2048,12 +2189,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         certificateButtons.style.display = 'none';
         nameInputContainer.style.display = 'flex';
 
-        nameInput.placeholder = "Enter 3 Initials";
+        nameInput.placeholder = t('enter_initials');
         nameInput.maxLength = 3;
         // Pre-fill with first 3 letters of player name
         const initials = playerName.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
         nameInput.value = initials;
-        submitNameBtn.textContent = "Submit to Leaderboard";
+        submitNameBtn.textContent = t('submit_to_lb');
     });
 
     downloadCertificateBtn.addEventListener('click', () => {
@@ -2071,7 +2212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Validate: only allow letters for initials
         const initialsOnly = sanitizedName.replace(/[^a-zA-Z]/g, '');
         if (initialsOnly === '' || initialsOnly.length > 3) {
-            validationMessage.textContent = 'Please enter 1-3 letters only.';
+            validationMessage.textContent = t('initials_validation');
             validationMessage.style.display = 'block';
             nameInput.style.borderColor = 'red';
             return;
@@ -2079,7 +2220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const finalWinnings = moneyLadder[currentMoneyIndex];
 
-        submitNameBtn.textContent = 'Adding...';
+        submitNameBtn.textContent = t('adding');
         submitNameBtn.disabled = true;
 
         // Format the name like A.G.A.
@@ -2087,14 +2228,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         await addScoreToLeaderboard(formattedName, finalWinnings.value, finalWinnings.amount, totalGameTime);
 
-        submitNameBtn.textContent = 'Added!';
+        submitNameBtn.textContent = t('added');
 
         setTimeout(() => {
             nameInputContainer.style.display = 'none';
             certificateButtons.style.display = 'flex';
             addToLeaderboardBtn.style.display = 'none';
             submitNameBtn.disabled = false;
-            submitNameBtn.textContent = 'Submit to Leaderboard';
+            submitNameBtn.textContent = t('submit_to_lb');
         }, 1500);
     });
 

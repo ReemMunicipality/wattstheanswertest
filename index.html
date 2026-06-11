@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watt's The Answer </title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=fc46" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=fc48" />
   <link rel="icon" href="assets/reem-logo-transparent.png" />
   <!-- SheetJS library for reading Excel files -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -14,10 +14,25 @@
   <!-- jsPDF for PDF generation on desktop -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body>
+<body class="gate-open">
   <video class="bg-video" id="bgVideo" autoplay muted playsinline preload="auto">
     <source src="assets/bg-city.mp4?v=hq1" type="video/mp4">
   </video>
+
+  <!-- Language gate: the first thing shown, before the game UI -->
+  <div class="modal language-gate active" id="languageGate" role="dialog" aria-modal="true" aria-label="Choose your language">
+    <div class="modal-content language-gate-content">
+      <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" class="gate-logo" />
+      <h2 class="gate-title">
+        <span class="gate-title-en">Choose your language</span>
+        <span class="gate-title-ar">اختر لغتك</span>
+      </h2>
+      <div class="gate-buttons" role="group" aria-label="Language options">
+        <button class="gate-lang-btn" id="gateEnBtn" data-lang="en">English</button>
+        <button class="gate-lang-btn" id="gateArBtn" data-lang="ar">العربية</button>
+      </div>
+    </div>
+  </div>
   <!-- Shown only on small landscape screens (phones); iPad landscape is unaffected -->
   <div class="rotate-prompt" aria-hidden="true">
     <div class="rotate-prompt-inner">
@@ -26,10 +41,13 @@
         <path d="M3 14 a6 6 0 0 1 6 -6" stroke-linecap="round"/>
         <path d="M9 5 L9 8 L6 8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <p>Please rotate your device to portrait to play.</p>
+      <p data-i18n="rotate_prompt">Please rotate your device to portrait to play.</p>
     </div>
   </div>
   <div class="top-toggles">
+    <button id="langToggle" class="lang-toggle" data-i18n-aria-label="aria_language" aria-label="Switch language">
+      <span class="lang-toggle-text">ع</span>
+    </button>
     <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound effects" aria-pressed="false">
       <svg class="sound-on" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M3 9.5 V14.5 H7.5 L13 19 V5 L7.5 9.5 Z"/>
@@ -43,9 +61,9 @@
       </svg>
     </button>
   </div>
-  <div class="modal active" id="startScreen" role="dialog" aria-labelledby="startScreenTitle">
+  <div class="modal" id="startScreen" role="dialog" aria-labelledby="startScreenTitle">
     <div class="powered-by floating">
-      <span class="powered-by-text">Powered by</span>
+      <span class="powered-by-text" data-i18n="powered_by">Powered by</span>
       <img src="assets/reem-logo-transparent.png" alt="RAK Municipality REEM Logo" class="powered-by-logo">
     </div>
     <div class="modal-content">
@@ -53,17 +71,17 @@
         <h1 class="game-main-title" id="startScreenTitle">WATT'S THE ANSWER</h1>
       </div>
       <div class="player-name-input">
-        <input type="text" id="playerNameInput" class="name-input" placeholder="Your name..." maxlength="30" aria-required="true" />
-        <small class="name-validation" id="nameValidation" style="display: none; color: #F44336;">Please enter your name to start</small>
+        <input type="text" id="playerNameInput" class="name-input" placeholder="Your name..." data-i18n-placeholder="name_placeholder" maxlength="30" aria-required="true" />
+        <small class="name-validation" id="nameValidation" style="display: none; color: #F44336;" data-i18n="name_validation">Please enter your name to start</small>
       </div>
       <div class="start-buttons" role="group" aria-label="Game options">
-        <button class="modal-button icon-btn side-btn" id="leaderboardBtn" aria-label="View leaderboard" title="Leaderboard">
+        <button class="modal-button icon-btn side-btn" id="leaderboardBtn" data-i18n-aria-label="aria_leaderboard" data-i18n-title="aria_leaderboard" aria-label="View leaderboard" title="Leaderboard">
           <img src="assets/icons/leaderboard.svg" alt="" class="btn-icon" />
         </button>
-        <button class="modal-button icon-btn play-btn-big" id="startGameBtn" aria-label="Start a new game" title="Start Game">
+        <button class="modal-button icon-btn play-btn-big" id="startGameBtn" data-i18n-aria-label="aria_start_game" data-i18n-title="aria_start_game" aria-label="Start a new game" title="Start Game">
           <img src="assets/icons/play.svg" alt="" class="btn-icon" />
         </button>
-        <button class="modal-button icon-btn side-btn" id="helpBtn" aria-label="View game rules and information" title="More Info">
+        <button class="modal-button icon-btn side-btn" id="helpBtn" data-i18n-aria-label="aria_more_info" data-i18n-title="aria_more_info" aria-label="View game rules and information" title="More Info">
           <img src="assets/icons/more-info.svg" alt="" class="btn-icon" />
         </button>
       </div>
@@ -72,15 +90,15 @@
 
   <div class="modal" id="leaderboardModal" role="dialog" aria-labelledby="leaderboardTitle">
     <div class="modal-content">
-      <h2 class="modal-title" id="leaderboardTitle">Top 15 Players</h2>
+      <h2 class="modal-title" id="leaderboardTitle" data-i18n="leaderboard_title">Top 15 Players</h2>
       <div class="leaderboard-container">
         <table class="leaderboard-table" id="leaderboardTable" aria-label="Leaderboard scores">
           <thead>
             <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">Name</th>
-              <th scope="col">Time</th>
-              <th scope="col">Score</th>
+              <th scope="col" data-i18n="col_rank">Rank</th>
+              <th scope="col" data-i18n="col_name">Name</th>
+              <th scope="col" data-i18n="col_time">Time</th>
+              <th scope="col" data-i18n="col_score">Score</th>
             </tr>
           </thead>
           <tbody id="leaderboardTableBody">
@@ -89,82 +107,82 @@
       </div>
       <button class="modal-button skip-back-btn skip-back-btn-wide" id="backToStartBtn" aria-label="Return to main menu" title="Back">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-        <span class="btn-label">Back</span>
+        <span class="btn-label" data-i18n="back">Back</span>
       </button>
     </div>
   </div>
 
 <div class="modal" id="helpModal" role="dialog" aria-labelledby="helpTitle">
   <div class="modal-content help-modal-content">
-    <h2 class="modal-title" id="helpTitle">More Info</h2>
+    <h2 class="modal-title" id="helpTitle" data-i18n="help_title">More Info</h2>
     <div class="help-content">
 
       <div class="help-section">
-        <h3>🎯 The Goal</h3>
-        <p>Answer all questions correctly for a chance to win the grand prize of 1,000,000 points.</p>
+        <h3 data-i18n="help_goal_h">🎯 The Goal</h3>
+        <p data-i18n="help_goal_p">Answer all questions correctly for a chance to win the grand prize of 1,000,000 points.</p>
       </div>
 
       <div class="help-section">
-        <h3>🎮 How It Works</h3>
-        <p>You will face 20 questions in each game and progress through all of them.</p>
+        <h3 data-i18n="help_how_h">🎮 How It Works</h3>
+        <p data-i18n="help_how_p">You will face 20 questions in each game and progress through all of them.</p>
         <ul class="help-list">
-          <li>You move through all questions in order</li>
-          <li>The challenge continues until all 20 are attempted</li>
+          <li data-i18n="help_how_li1">You move through all questions in order</li>
+          <li data-i18n="help_how_li2">The challenge continues until all 20 are attempted</li>
         </ul>
       </div>
 
       <div class="help-section">
-        <h3>🪜 Climb the Ladder</h3>
+        <h3 data-i18n="help_ladder_h">🪜 Climb the Ladder</h3>
         <ul class="help-list">
-          <li>Correct answers move you up the ladder</li>
-          <li>Wrong answers keep you at the same level</li>
-          <li>You will not lose progress or move backward</li>
+          <li data-i18n="help_ladder_li1">Correct answers move you up the ladder</li>
+          <li data-i18n="help_ladder_li2">Wrong answers keep you at the same level</li>
+          <li data-i18n="help_ladder_li3">You will not lose progress or move backward</li>
         </ul>
       </div>
 
       <div class="help-section">
-        <h3>⏱ Beat the Clock</h3>
+        <h3 data-i18n="help_clock_h">⏱ Beat the Clock</h3>
         <ul class="help-list">
-          <li>You have 30 seconds per question</li>
-          <li>If time runs out, it counts as a wrong answer</li>
+          <li data-i18n="help_clock_li1">You have 30 seconds per question</li>
+          <li data-i18n="help_clock_li2">If time runs out, it counts as a wrong answer</li>
         </ul>
       </div>
 
       <div class="help-section">
-        <h3>📊 Difficulty by Level</h3>
-        <p>Questions get harder the more correct answers you give:</p>
+        <h3 data-i18n="help_diff_h">📊 Difficulty by Level</h3>
+        <p data-i18n="help_diff_p">Questions get harder the more correct answers you give:</p>
         <ul class="help-list">
-          <li>First 8 correct answers → Easy</li>
-          <li>Next 7 correct answers → Medium</li>
-          <li>Last 5 correct answers → Hard</li>
+          <li data-i18n="help_diff_li1">First 8 correct answers → Easy</li>
+          <li data-i18n="help_diff_li2">Next 7 correct answers → Medium</li>
+          <li data-i18n="help_diff_li3">Last 5 correct answers → Hard</li>
         </ul>
-        <p>A wrong answer keeps you at the same level, so the difficulty only goes up when you answer correctly.</p>
+        <p data-i18n="help_diff_p2">A wrong answer keeps you at the same level, so the difficulty only goes up when you answer correctly.</p>
       </div>
 
       <div class="help-section">
-        <h3>🧩 Helplines</h3>
-        <p>Each game includes one use per helpline. Use them wisely:</p>
-        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-elimination-used.svg" alt="Elimination icon" /><span><strong>Elimination</strong> – removes one wrong option</span></div>
-        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-add-time-used.svg" alt="Add Time icon" /><span><strong>Add Time</strong> – adds +30 seconds</span></div>
-        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-skip-used.svg" alt="Skip icon" /><span><strong>Skip Question</strong> – moves to next question with no penalty</span></div>
+        <h3 data-i18n="help_help_h">🧩 Helplines</h3>
+        <p data-i18n="help_help_p">Each game includes one use per helpline. Use them wisely:</p>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-elimination-used.svg" alt="Elimination icon" /><span data-i18n="help_help_elim"><strong>Elimination</strong> – removes one wrong option</span></div>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-add-time-used.svg" alt="Add Time icon" /><span data-i18n="help_help_time"><strong>Add Time</strong> – adds +30 seconds</span></div>
+        <div class="help-helpline-row"><img class="help-helpline-icon" src="assets/icons/helpline-skip-used.svg" alt="Skip icon" /><span data-i18n="help_help_skip"><strong>Skip Question</strong> – moves to next question with no penalty</span></div>
       </div>
 
       <div class="help-section">
-        <h3>🏆 Winning &amp; Glory</h3>
-        <p>After the game, you can:</p>
+        <h3 data-i18n="help_win_h">🏆 Winning &amp; Glory</h3>
+        <p data-i18n="help_win_p">After the game, you can:</p>
         <ul class="help-list">
-          <li>Download a personalised certificate based on your score</li>
-          <li>Join the leaderboard if you're in the Top 15</li>
-          <li>Tiebreaker is based on total time (faster = better rank)</li>
+          <li data-i18n="help_win_li1">Download a personalised certificate based on your score</li>
+          <li data-i18n="help_win_li2">Join the leaderboard if you're in the Top 15</li>
+          <li data-i18n="help_win_li3">Tiebreaker is based on total time (faster = better rank)</li>
         </ul>
       </div>
 
       <div class="help-footer">
-        <h4>📜 Terms &amp; Conditions</h4>
-        <p>This game is intended for educational and entertainment purposes only.</p>
-        <p>Points have no real-world monetary value.</p>
-        <h4>👏 Acknowledgements</h4>
-        <p>Developed by passionate volunteers:</p>
+        <h4 data-i18n="help_terms_h">📜 Terms &amp; Conditions</h4>
+        <p data-i18n="help_terms_p1">This game is intended for educational and entertainment purposes only.</p>
+        <p data-i18n="help_terms_p2">Points have no real-world monetary value.</p>
+        <h4 data-i18n="help_ack_h">👏 Acknowledgements</h4>
+        <p data-i18n="help_ack_p">Developed by passionate volunteers:</p>
         <p><strong>Adam Ghafur</strong></p>
         <p><strong>Anas Msimir</strong></p>
         <p><strong>Anna Tresigne</strong></p>
@@ -172,17 +190,17 @@
         <p><strong>Syed Arhaan Ahmed</strong></p>
       </div>
     </div>
-    
+
     <button class="modal-button skip-back-btn skip-back-btn-wide" id="backToStartFromHelpBtn" aria-label="Return to main menu" title="Back">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 6 L7 12 L15 18 Z"/><rect x="5" y="6" width="2" height="12"/></svg>
-      <span class="btn-label">Back</span>
+      <span class="btn-label" data-i18n="back">Back</span>
     </button>
   </div>
 </div>
 
   <main class="container" id="gameContainer" role="main">
     <div class="game-area">
-      <button class="exit-button" id="exitButton" aria-label="Exit game and return to main menu" title="Exit">×</button>
+      <button class="exit-button" id="exitButton" data-i18n-aria-label="aria_exit" data-i18n-title="aria_exit" aria-label="Exit game and return to main menu" title="Exit">×</button>
 
       <div class="logo">
         <div class="game-titles">
@@ -212,7 +230,7 @@
                 <img src="assets/icons/helpline-skip-used.svg" alt="" class="lifeline-icon" />
               </button>
             </div>
-            <span class="helplines-label">HELPLINES</span>
+            <span class="helplines-label" data-i18n="helplines_label">HELPLINES</span>
           </div>
           <div class="points-and-progress">
             <div class="points-pill" id="pointsPill" aria-live="polite">0 Points</div>
@@ -265,16 +283,16 @@
   <!-- Pre-game helpline explainer -->
   <div class="modal" id="lifelineExplainerModal" role="dialog" aria-labelledby="lifelineExplainerTitle">
     <div class="modal-content lifeline-explainer">
-      <h2 class="modal-title" id="lifelineExplainerTitle">Your Helplines</h2>
-      <p class="explainer-subtitle">You get one of each per game. Use them wisely!</p>
+      <h2 class="modal-title" id="lifelineExplainerTitle" data-i18n="lifeline_title">Your Helplines</h2>
+      <p class="explainer-subtitle" data-i18n="lifeline_subtitle">You get one of each per game. Use them wisely!</p>
       <div class="explainer-items">
         <div class="explainer-item">
           <div class="explainer-icon explainer-helpline-icon">
             <img src="assets/icons/helpline-elimination-used.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Elimination</strong>
-            <span>Removes one wrong answer</span>
+            <strong data-i18n="elim_name">Elimination</strong>
+            <span data-i18n="elim_desc">Removes one wrong answer</span>
           </div>
         </div>
         <div class="explainer-item">
@@ -282,8 +300,8 @@
             <img src="assets/icons/helpline-add-time-used.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Add Time</strong>
-            <span>Adds 30 extra seconds</span>
+            <strong data-i18n="time_name">Add Time</strong>
+            <span data-i18n="time_desc">Adds 30 extra seconds</span>
           </div>
         </div>
         <div class="explainer-item">
@@ -291,28 +309,28 @@
             <img src="assets/icons/helpline-skip-used.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Skip</strong>
-            <span>Skip to the next question</span>
+            <strong data-i18n="skip_name">Skip</strong>
+            <span data-i18n="skip_desc">Skip to the next question</span>
           </div>
         </div>
       </div>
-      <button class="modal-button" id="lifelineExplainerOk">Got it!</button>
+      <button class="modal-button" id="lifelineExplainerOk" data-i18n="got_it">Got it!</button>
     </div>
   </div>
 
   <!-- Pre-game level / difficulty explainer -->
   <div class="modal" id="levelExplainerModal" role="dialog" aria-labelledby="levelExplainerTitle">
     <div class="modal-content lifeline-explainer">
-      <h2 class="modal-title" id="levelExplainerTitle">Climbing the Ladder</h2>
-      <p class="explainer-subtitle">The game has 3 difficulty levels</p>
+      <h2 class="modal-title" id="levelExplainerTitle" data-i18n="level_title">Climbing the Ladder</h2>
+      <p class="explainer-subtitle" data-i18n="level_subtitle">The game has 3 difficulty levels</p>
       <div class="explainer-items">
         <div class="explainer-item">
           <div class="explainer-icon explainer-level-icon">
             <img src="assets/icons/level-easy.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Easy — First 8 correct</strong>
-            <span>Build the basics. 100 to 8,000 points.</span>
+            <strong data-i18n="level_easy_name">Easy — First 8 correct</strong>
+            <span data-i18n="level_easy_desc">Build the basics. 100 to 8,000 points.</span>
           </div>
         </div>
         <div class="explainer-item">
@@ -320,8 +338,8 @@
             <img src="assets/icons/level-medium.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Medium — Next 7 correct</strong>
-            <span>Step it up. 10,000 to 150,000 points.</span>
+            <strong data-i18n="level_medium_name">Medium — Next 7 correct</strong>
+            <span data-i18n="level_medium_desc">Step it up. 10,000 to 150,000 points.</span>
           </div>
         </div>
         <div class="explainer-item">
@@ -329,27 +347,27 @@
             <img src="assets/icons/level-hard.svg" alt="" />
           </div>
           <div class="explainer-text">
-            <strong>Hard — Last 5 correct</strong>
-            <span>The big leagues. 250,000 to 1,000,000 points.</span>
+            <strong data-i18n="level_hard_name">Hard — Last 5 correct</strong>
+            <span data-i18n="level_hard_desc">The big leagues. 250,000 to 1,000,000 points.</span>
           </div>
         </div>
       </div>
-      <button class="modal-button" id="levelExplainerOk">Got it!</button>
+      <button class="modal-button" id="levelExplainerOk" data-i18n="got_it">Got it!</button>
     </div>
   </div>
 
   <!-- In-game helpline chooser popup -->
   <div class="modal" id="lifelineChooserModal" role="dialog" aria-labelledby="lifelineChooserTitle">
     <div class="modal-content lifeline-chooser">
-      <h2 class="modal-title" id="lifelineChooserTitle">Choose a Helpline</h2>
+      <h2 class="modal-title" id="lifelineChooserTitle" data-i18n="chooser_title">Choose a Helpline</h2>
       <div class="chooser-items">
         <button class="chooser-item" id="chooserElimination">
           <div class="explainer-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 14 L9 17 L18 8"/><line x1="6" y1="8" x2="14" y2="8"/></svg>
           </div>
           <div class="explainer-text">
-            <strong>Elimination</strong>
-            <span>Removes one wrong answer</span>
+            <strong data-i18n="elim_name">Elimination</strong>
+            <span data-i18n="elim_desc">Removes one wrong answer</span>
           </div>
         </button>
         <button class="chooser-item" id="chooserAddTime">
@@ -357,8 +375,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 15,15"/><line x1="9" y1="3" x2="15" y2="3"/></svg>
           </div>
           <div class="explainer-text">
-            <strong>Add Time</strong>
-            <span>Adds 30 extra seconds</span>
+            <strong data-i18n="time_name">Add Time</strong>
+            <span data-i18n="time_desc">Adds 30 extra seconds</span>
           </div>
         </button>
         <button class="chooser-item" id="chooserSkip">
@@ -366,21 +384,21 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5 L13 12 L5 19 Z"/><rect x="15" y="5" width="3" height="14"/></svg>
           </div>
           <div class="explainer-text">
-            <strong>Skip</strong>
-            <span>Skip to the next question</span>
+            <strong data-i18n="skip_name">Skip</strong>
+            <span data-i18n="skip_desc">Skip to the next question</span>
           </div>
         </button>
       </div>
-      <button class="modal-button chooser-cancel" id="chooserCancel">Cancel</button>
+      <button class="modal-button chooser-cancel" id="chooserCancel" data-i18n="cancel">Cancel</button>
     </div>
   </div>
 
   <div class="modal" id="resultModal" role="dialog" aria-labelledby="resultTitle" aria-describedby="resultMessage">
     <div class="modal-content">
-      <h2 class="modal-title" id="resultTitle">Result</h2>
+      <h2 class="modal-title" id="resultTitle" data-i18n="result_title">Result</h2>
       <div class="questions-left" id="resultQuestionsLeft" aria-live="polite"></div>
-      <div class="modal-message" id="resultMessage" aria-live="polite">Your answer was correct!</div>
-      <button class="modal-button" id="resultButton" aria-label="Continue to next question">Continue</button>
+      <div class="modal-message" id="resultMessage" aria-live="polite" data-i18n="result_default_msg">Your answer was correct!</div>
+      <button class="modal-button" id="resultButton" aria-label="Continue to next question" data-i18n="continue">Continue</button>
     </div>
   </div>
 
@@ -400,17 +418,17 @@
 
       <div class="name-input-container" id="nameInputContainer" style="display: none;">
         <label for="nameInput" class="visually-hidden">Enter your name</label>
-        <input type="text" class="name-input" id="nameInput" placeholder="Enter your name" aria-describedby="validationMessage" />
+        <input type="text" class="name-input" id="nameInput" placeholder="Enter your name" data-i18n-placeholder="cert_name_placeholder" aria-describedby="validationMessage" />
         <small class="validation-message" id="validationMessage" style="display: none; color: red;" role="alert"></small>
-        <button class="modal-button" id="submitNameBtn">Submit</button>
+        <button class="modal-button" id="submitNameBtn" data-i18n="submit">Submit</button>
       </div>
 
       <div class="certificate-buttons" role="group" aria-label="Certificate actions">
-        <button class="modal-button" id="addToLeaderboardBtn" style="display: none;" aria-label="Add your score to the leaderboard">Add to Leaderboard</button>
-        <button class="modal-button cert-download-btn" id="downloadCertificateBtn" aria-label="Download your certificate" title="Download Certificate">
+        <button class="modal-button" id="addToLeaderboardBtn" style="display: none;" data-i18n="add_to_leaderboard" aria-label="Add your score to the leaderboard">Add to Leaderboard</button>
+        <button class="modal-button cert-download-btn" id="downloadCertificateBtn" data-i18n-aria-label="download_certificate" data-i18n-title="download_certificate" aria-label="Download your certificate" title="Download Certificate">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4 V15" stroke-linecap="round"/><path d="M7 11 L12 16 L17 11" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="19" x2="18" y2="19" stroke-linecap="round"/></svg>
         </button>
-        <button class="modal-button cert-play-again-btn" id="playAgain" aria-label="Start a new game" title="Play Again">
+        <button class="modal-button cert-play-again-btn" id="playAgain" data-i18n-aria-label="play_again" data-i18n-title="play_again" aria-label="Start a new game" title="Play Again">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 6.5 L17 12 L9 17.5 Z"/></svg>
         </button>
       </div>
@@ -421,6 +439,6 @@
   <audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
-  <script type="module" src="script.js?v=fc47"></script>
+  <script type="module" src="script.js?v=fc49"></script>
 </body>
 </html>
